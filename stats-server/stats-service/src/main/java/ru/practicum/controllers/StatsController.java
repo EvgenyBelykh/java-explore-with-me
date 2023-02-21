@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
-import ru.practicum.model.EndpointHit;
 import ru.practicum.model.ViewStats;
 import ru.practicum.services.StatService;
 
@@ -40,5 +39,4 @@ public class StatsController {
 
         return statService.getStat(start, end, uris, unique);
     }
-
 }

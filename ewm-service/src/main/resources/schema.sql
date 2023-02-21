@@ -1,1 +1,4 @@
-CREATE TABLE if not exists main();
+CREATE TABLE if not exists main
+(
+
+);

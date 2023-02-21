@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   stats-server:
-    build: stats-server
+    build: stats-server/stats-service
     image: explorewithme-stats-server
     container_name: explorewithme-stats-server
     restart: always
@@ -13,7 +13,7 @@ services:
 
   stats-db:
     image: postgres:14-alpine
-    container_name: explorewithme-main-ewm-db
+    container_name: explorewithme-stats-server-db
     restart: always
     ports:
       - "6542:5432"
@@ -36,7 +36,7 @@ services:
 
   ewm-db:
     image: postgres:14-alpine
-    container_name: explorewithme-main-ewm-db
+    container_name: explorewithme-ewm-service-db
     restart: always
     ports:
       - "6541:5432"

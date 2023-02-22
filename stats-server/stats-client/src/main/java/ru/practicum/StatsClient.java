@@ -9,7 +9,7 @@ import ru.practicum.dto.EndpointHitDto;
 import java.util.Map;
 
 public class StatsClient extends BaseClient {
-    public StatsClient(String serverUrl, RestTemplateBuilder builder){
+    public StatsClient(String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
@@ -18,11 +18,11 @@ public class StatsClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> hit(EndpointHitDto endpointHitDto){
+    public ResponseEntity<Object> hit(EndpointHitDto endpointHitDto) {
         return post("/hit", endpointHitDto);
     }
 
-    public ResponseEntity<Object> getStats(String start, String end, String uris, Boolean unique){
+    public ResponseEntity<Object> getStats(String start, String end, String uris, Boolean unique) {
         Map<String, Object> parameters = Map.of(
                 "start", start,
                 "end", end,

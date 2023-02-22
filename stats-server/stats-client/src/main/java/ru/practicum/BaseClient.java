@@ -12,15 +12,15 @@ import java.util.Map;
 public class BaseClient {
     protected final RestTemplate rest;
 
-    public BaseClient (RestTemplate rest){
+    public BaseClient(RestTemplate rest) {
         this.rest = rest;
     }
 
-    protected ResponseEntity<Object> post(String path, Object body){
+    protected ResponseEntity<Object> post(String path, Object body) {
         return makeAndSendRequest(HttpMethod.POST, path, null, body);
     }
 
-    protected ResponseEntity<Object> get(String path, Map<String, Object> parameters){
+    protected ResponseEntity<Object> get(String path, Map<String, Object> parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
     }
 
@@ -31,13 +31,14 @@ public class BaseClient {
         HttpEntity<Object> requestEntity = new HttpEntity<>(body, null);
 
         ResponseEntity<Object> statsServerResponse;
-        try{
+
+        try {
             if(parameters != null) {
                 statsServerResponse = rest.exchange(path, method, requestEntity, Object.class, parameters);
             } else {
                 statsServerResponse = rest.exchange(path, method, requestEntity, Object.class);
             }
-        } catch ( HttpStatusCodeException e){
+        } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
         }
         return prepareStatsClientResponse(statsServerResponse);
@@ -49,9 +50,10 @@ public class BaseClient {
         }
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
 
-        if(response.hasBody()){
+        if(response.hasBody()) {
             return responseBuilder.body(response.getBody());
         }
+
         return responseBuilder.build();
     }
 

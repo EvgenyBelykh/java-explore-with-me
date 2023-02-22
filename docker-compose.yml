@@ -10,6 +10,10 @@ services:
     - "9090:9090"
     depends_on:
       - stats-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-ewm-db
+      - POSTGRES_USER=neonjohn
+      - POSTGRES_PASSWORD=19891989
 
   stats-db:
     image: postgres:14-alpine
@@ -33,6 +37,10 @@ services:
       - "8080:8080"
     depends_on:
       - ewm-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main-ewm-db
+      - POSTGRES_USER=neonjohn
+      - POSTGRES_PASSWORD=19891989
 
   ewm-db:
     image: postgres:14-alpine

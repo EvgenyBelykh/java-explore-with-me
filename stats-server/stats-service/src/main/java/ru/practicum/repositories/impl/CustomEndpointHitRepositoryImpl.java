@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomEndpointHitRepositoryImpl implements CustomEndpointHitRepository {
     private final EntityManager entityManager;
+
     @Override
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -36,10 +37,8 @@ public class CustomEndpointHitRepositoryImpl implements CustomEndpointHitReposit
         criteriaQuery.orderBy(criteriaBuilder.desc(unique ? criteriaBuilder.countDistinct(endpointHitRoot.get("ip")) :
                 criteriaBuilder.count(endpointHitRoot.get("ip"))));
 
-
         predicates.add(criteriaBuilder.between(endpointHitRoot.get("timestamp"), start, end));
-
-        if(!uris.isEmpty()){
+        if(!uris.isEmpty()) {
             CriteriaBuilder.In<String> in = criteriaBuilder.in(endpointHitRoot.get("uri"));
             for (String uri : uris) {
                 in.value(uri);

@@ -33,7 +33,7 @@ public class BaseClient {
         ResponseEntity<Object> statsServerResponse;
 
         try {
-            if(parameters != null) {
+            if (parameters != null) {
                 statsServerResponse = rest.exchange(path, method, requestEntity, Object.class, parameters);
             } else {
                 statsServerResponse = rest.exchange(path, method, requestEntity, Object.class);
@@ -50,7 +50,7 @@ public class BaseClient {
         }
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
 
-        if(response.hasBody()) {
+        if (response.hasBody()) {
             return responseBuilder.body(response.getBody());
         }
 

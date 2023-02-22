@@ -38,7 +38,7 @@ public class CustomEndpointHitRepositoryImpl implements CustomEndpointHitReposit
                 criteriaBuilder.count(endpointHitRoot.get("ip"))));
 
         predicates.add(criteriaBuilder.between(endpointHitRoot.get("timestamp"), start, end));
-        if(!uris.isEmpty()){
+        if (!uris.isEmpty()) {
             CriteriaBuilder.In<String> in = criteriaBuilder.in(endpointHitRoot.get("uri"));
             for (String uri : uris) {
                 in.value(uri);

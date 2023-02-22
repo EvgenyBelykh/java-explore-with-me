@@ -23,7 +23,7 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
-    public EndpointHitDto hit(@RequestBody @Valid EndpointHitDto endpointHitDto){
+    public EndpointHitDto hit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
         log.info("Запрос сохранения информации об отправке запроса пользователем с ip={} на адрес={} ",
                 endpointHitDto.getIp(), endpointHitDto.getUri());
 
@@ -34,7 +34,7 @@ public class StatsController {
     public List<ViewStats> getStats(@RequestParam(name = "start") String start,
                                    @RequestParam(name = "end") String end,
                                    @RequestParam(name = "uris") List<String> uris,
-                                   @RequestParam(name = "unique", defaultValue = "false") Boolean unique){
+                                   @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
         log.info("Запрос получения статистики по посещениям");
 
         return statService.getStat(start, end, uris, unique);

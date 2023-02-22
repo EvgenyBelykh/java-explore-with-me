@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 @Component
 public class EndpointHitMapper {
-    public EndpointHitDto toEndpointHitDto(EndpointHit endpointHit){
+    public EndpointHitDto toEndpointHitDto(EndpointHit endpointHit) {
         return new EndpointHitDto(endpointHit.getApp(),
                 endpointHit.getUri(),
                 endpointHit.getIp(),
                 endpointHit.getTimestamp().toString());
     }
 
-    public EndpointHit toEndpointHit(String app, String uri, String ip, LocalDateTime timestamp){
+    public EndpointHit toEndpointHit(String app, String uri, String ip, LocalDateTime timestamp) {
         return new EndpointHit(app,
                 uri,
                 ip,

@@ -16,4 +16,5 @@ public class EwmController {
     public String test() {
         return "OK from controller!";
     }
+
 }

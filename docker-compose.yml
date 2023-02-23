@@ -28,6 +28,7 @@ services:
     volumes:
       - /var/lib/postgresql/data/
 
+
   ewm-service:
     build: ewm-service
     image: explorewithme-ewm-service

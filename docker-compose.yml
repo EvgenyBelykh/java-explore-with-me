@@ -5,7 +5,7 @@ services:
     build: stats-server/stats-service
     image: explorewithme-stats-server
     container_name: explorewithme-stats-server
-    restart: always
+#    restart: always
     ports:
     - "9090:9090"
     depends_on:
@@ -18,7 +18,7 @@ services:
   stats-db:
     image: postgres:14-alpine
     container_name: explorewithme-stats-server-db
-    restart: always
+#    restart: always
     ports:
       - "6542:5432"
     environment:
@@ -32,7 +32,7 @@ services:
     build: ewm-service
     image: explorewithme-ewm-service
     container_name: explorewithme-ewm-service
-    restart: always
+#    restart: always
     ports:
       - "8080:8080"
     depends_on:
@@ -45,7 +45,7 @@ services:
   ewm-db:
     image: postgres:14-alpine
     container_name: explorewithme-ewm-service-db
-    restart: always
+#    restart: always
     ports:
       - "6541:5432"
     environment:

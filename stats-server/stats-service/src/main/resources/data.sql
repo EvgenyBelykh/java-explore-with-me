@@ -1,0 +1,3 @@
+DELETE FROM endpointhit;
+
+ALTER TABLE endpointhit ALTER COLUMN ID RESTART WITH 1;

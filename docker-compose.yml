@@ -1,15 +1,57 @@
-version: '3.1'
+version: '3.8'
 services:
+
   stats-server:
+    build: stats-server/stats-service
+    image: explorewithme-stats-server
+    container_name: explorewithme-stats-server
+    restart: always
     ports:
-      - "9090:9090"
+    - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-ewm-db
+      - POSTGRES_USER=neonjohn
+      - POSTGRES_PASSWORD=19891989
 
   stats-db:
     image: postgres:14-alpine
+    container_name: explorewithme-stats-server-db
+    restart: always
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_DB=stats-ewm-db
+      - POSTGRES_USER=neonjohn
+      - POSTGRES_PASSWORD=19891989
+    volumes:
+      - /var/lib/postgresql/data/
+
 
   ewm-service:
+    build: ewm-service
+    image: explorewithme-ewm-service
+    container_name: explorewithme-ewm-service
+    restart: always
     ports:
       - "8080:8080"
+    depends_on:
+      - ewm-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main-ewm-db
+      - POSTGRES_USER=neonjohn
+      - POSTGRES_PASSWORD=19891989
 
   ewm-db:
     image: postgres:14-alpine
+    container_name: explorewithme-ewm-service-db
+    restart: always
+    ports:
+      - "6541:5432"
+    environment:
+      - POSTGRES_DB=main-ewm-db
+      - POSTGRES_USER=neonjohn
+      - POSTGRES_PASSWORD=19891989
+    volumes:
+      - /var/lib/postgresql/data/

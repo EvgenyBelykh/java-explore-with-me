@@ -24,7 +24,8 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public EndpointHitDto add(EndpointHitDto endpointHitDto) {
-        EndpointHit endpointHit = endpointHitMapper.toEndpointHit(endpointHitDto.getApp(),
+        EndpointHit endpointHit = endpointHitMapper.toEndpointHit(
+                endpointHitDto.getApp(),
                 endpointHitDto.getUri(),
                 endpointHitDto.getIp(),
                 LocalDateTime.parse(endpointHitDto.getTimestamp(), dateTimeFormatter));

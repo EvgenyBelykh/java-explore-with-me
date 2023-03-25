@@ -19,13 +19,13 @@ public class CategoryControllerAdmin {
     private final CategoryServiceAdmin categoryServiceAdmin;
 
     @PostMapping
-    private ResponseEntity<CategoryDto> add(@Valid @RequestBody NewCategoryDto newCategoryDto){
+    private ResponseEntity<CategoryDto> add(@Valid @RequestBody NewCategoryDto newCategoryDto) {
         log.info("ApiAdmin. Запрос добавления категории name {}", newCategoryDto.getName());
         return new ResponseEntity<>(categoryServiceAdmin.add(newCategoryDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{catId}")
-    private ResponseEntity<Void> remove(@PathVariable("catId") Long idCat){
+    private ResponseEntity<Void> remove(@PathVariable("catId") Long idCat) {
         log.info("ApiAdmin. Запрос удаления категории с id {}", idCat);
         categoryServiceAdmin.remove(idCat);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

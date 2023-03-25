@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.common.dto.CategoryDto;
 import ru.practicum.common.dto.NewCategoryDto;
 import ru.practicum.common.models.Category;
+
 @Component
 public class CategoryMapper {
 

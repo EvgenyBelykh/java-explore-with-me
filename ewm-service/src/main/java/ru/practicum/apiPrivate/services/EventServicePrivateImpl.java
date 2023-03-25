@@ -285,7 +285,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         }
     }
 
-    private void checkState(UpdateEventUserRequest updateEventUserRequest, Event event){
+    private void checkState(UpdateEventUserRequest updateEventUserRequest, Event event) {
         if (event.getState() != State.CANCELED && (event.getState() != State.PENDING)) {
             throw new PendingOrCanceledEventException();
         } else {
@@ -297,13 +297,13 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         }
     }
 
-    private void checkOrUpdateEventDate(UpdateEventUserRequest updateEventUserRequest, Event event){
+    private void checkOrUpdateEventDate(UpdateEventUserRequest updateEventUserRequest, Event event) {
         if (event.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
             throw new TooLateEventException(event.getTitle());
         } else {
             if (updateEventUserRequest.getEventDate() != null) {
                 if (LocalDateTime.parse(updateEventUserRequest.getEventDate(), dateTimeFormatter).minusHours(2)
-                        .isBefore(LocalDateTime.now())){
+                        .isBefore(LocalDateTime.now())) {
                     throw new TooLateEventException(updateEventUserRequest.getTitle());
                 } else {
                     event.setEventDate(LocalDateTime.parse(updateEventUserRequest.getEventDate(), dateTimeFormatter));
@@ -312,25 +312,25 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         }
     }
 
-    private void checkOrUpdateTitle(UpdateEventUserRequest updateEventUserRequest, Event event){
+    private void checkOrUpdateTitle(UpdateEventUserRequest updateEventUserRequest, Event event) {
         if (updateEventUserRequest.getTitle() != null) {
             event.setTitle(updateEventUserRequest.getTitle());
         }
     }
 
-    private void checkOrUpdateAnnotation(UpdateEventUserRequest updateEventUserRequest, Event event){
+    private void checkOrUpdateAnnotation(UpdateEventUserRequest updateEventUserRequest, Event event) {
         if (updateEventUserRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
     }
 
-    private void checkOrUpdateDescription(UpdateEventUserRequest updateEventUserRequest, Event event){
+    private void checkOrUpdateDescription(UpdateEventUserRequest updateEventUserRequest, Event event) {
         if (updateEventUserRequest.getDescription() != null) {
             event.setDescription(updateEventUserRequest.getDescription());
         }
     }
 
-    private void checkOrUpdateCategory(UpdateEventUserRequest updateEventUserRequest, Event event){
+    private void checkOrUpdateCategory(UpdateEventUserRequest updateEventUserRequest, Event event) {
         if (updateEventUserRequest.getCategory() != null) {
             Category category = categoryRepository.findById(updateEventUserRequest.getCategory()).orElseThrow(() ->
                     new NotFindCategoryException(updateEventUserRequest.getCategory()));
@@ -347,7 +347,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         }
     }
 
-    private void checkOrUpdatePaid(UpdateEventUserRequest updateEventUserRequest, Event event){
+    private void checkOrUpdatePaid(UpdateEventUserRequest updateEventUserRequest, Event event) {
         if (updateEventUserRequest.getPaid() != null) {
             event.setPaid(updateEventUserRequest.getPaid());
         }

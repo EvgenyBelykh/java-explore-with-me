@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CompilationMapper {
     private final EventMapper eventMapper;
+
     public Compilation toCompilation(NewCompilationDto newCompilationDto, List<Event> events) {
         return new Compilation(
                 newCompilationDto.getTitle(),

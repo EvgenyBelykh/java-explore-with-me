@@ -3,13 +3,8 @@ package ru.practicum.common.mappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.common.dto.*;
-import ru.practicum.common.enums.State;
-import ru.practicum.common.models.Category;
 import ru.practicum.common.models.Event;
-import ru.practicum.common.models.LocationModel;
-import ru.practicum.common.models.User;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component

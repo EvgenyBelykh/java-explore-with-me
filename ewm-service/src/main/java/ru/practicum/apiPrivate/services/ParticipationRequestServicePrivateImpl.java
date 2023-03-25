@@ -40,7 +40,7 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
         log.info("ApiPrivate. Возвращена информация о заявках пользователя с id={} на участие в чужих событиях",
                 idUser);
 
-        if(participationRequests.isEmpty()) {
+        if (participationRequests.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -61,7 +61,7 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
             throw new EventBelongThisUserException(eventId, idUser);
         }
 
-        if (!(event.getState() == State.PUBLISHED)){
+        if (!(event.getState() == State.PUBLISHED)) {
             throw new NotPublishedPrivateEventException("Event must be published");
         }
 
@@ -94,12 +94,12 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
 
     @Override
     public ParticipationRequestDto patch(Long idUser, Long requestId) {
-        ParticipationRequest participationRequest = participationRequestRepository.findById(requestId).
-                orElseThrow(() -> new NotFindParticipationRequest(requestId));
+        ParticipationRequest participationRequest = participationRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFindParticipationRequest(requestId));
         Long eventId = participationRequest.getEvent().getId();
 
-        Event event = eventRepository.findById(participationRequest.getEvent().getId()).
-                orElseThrow(() -> new NotFindEventException(eventId));
+        Event event = eventRepository.findById(participationRequest.getEvent().getId())
+                .orElseThrow(() -> new NotFindEventException(eventId));
 
         participationRequest.setStatus(Status.CANCELED);
         participationRequest = participationRequestRepository.save(participationRequest);

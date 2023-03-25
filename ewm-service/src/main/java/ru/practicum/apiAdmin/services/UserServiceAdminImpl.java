@@ -49,7 +49,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
 
     @Override
     public List<UserDto> get(Integer from, Integer size, List<Long> ids) {
-        if(ids != null) {
+        if (ids != null) {
             Iterable<User> users = userRepository.findAllById(ids);
             List<UserDto> userDtoList = new ArrayList<>();
             for (User user : users) {
@@ -60,7 +60,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
         } else {
             Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "id"));
             Page<User> userPage = userRepository.findAll(pageable);
-            if(userPage.getContent().isEmpty()) {
+            if (userPage.getContent().isEmpty()) {
                 throw new NotFindUsersException("Нет данных для вывода или база пуста.");
             }
             log.info("ApiAdmin. Возвращен список пользователей с пагинацией  от пользователя с id= {} размером {}", from, size);

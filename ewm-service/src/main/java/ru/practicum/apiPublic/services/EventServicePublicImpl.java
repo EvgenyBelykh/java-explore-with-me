@@ -62,7 +62,7 @@ public class EventServicePublicImpl implements EventServicePublic {
     public EventFullDto get(Long id, HttpServletRequest request) {
         statsClient.hit(endpointHitMapper.toEndpointHitDto(request));
 
-        Event event = eventRepository.findById (id).orElseThrow(() -> new NotFindEventException(id));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new NotFindEventException(id));
         if (event.getState() != State.PUBLISHED) {
             throw new NotPublishedPublicEventException(id);
         }

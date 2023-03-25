@@ -48,15 +48,15 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         Iterable<User> userIterable = userRepository.findAllById(userIds);
         List<User> users  = new ArrayList<>();
         for (User user : userIterable) {
-            if(user != null) {
+            if (user != null) {
                 users.add(user);
             }
         }
-        if(users.isEmpty()){
+        if (users.isEmpty()) {
             throw new NotFindUsersException("Данных пользователей нет в базе");
         }
 
-        List<Event> events =eventRepository.privateSearch(
+        List<Event> events = eventRepository.privateSearch(
                 userIds,
                 toStateEnums(states),
                 catIds,
@@ -103,13 +103,13 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         return toEventFullDto(event);
     }
 
-    private void checkOrUpdateEventDate(UpdateEventAdminRequest updateEventAdminRequest, Event event){
-        if(event.getEventDate().minusHours(1).isBefore(LocalDateTime.now())) {
+    private void checkOrUpdateEventDate(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
+        if (event.getEventDate().minusHours(1).isBefore(LocalDateTime.now())) {
             throw new TooLateEventException(event.getTitle());
         } else {
-            if(updateEventAdminRequest.getEventDate() != null) {
-                if(LocalDateTime.parse(updateEventAdminRequest.getEventDate(), dateTimeFormatter).minusHours(1)
-                        .isBefore(LocalDateTime.now())){
+            if (updateEventAdminRequest.getEventDate() != null) {
+                if (LocalDateTime.parse(updateEventAdminRequest.getEventDate(), dateTimeFormatter).minusHours(1)
+                        .isBefore(LocalDateTime.now())) {
                     throw new TooLateEventException(updateEventAdminRequest.getTitle());
                 } else {
                     event.setEventDate(LocalDateTime.parse(updateEventAdminRequest.getEventDate(), dateTimeFormatter));
@@ -118,8 +118,8 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         }
     }
 
-    private void checkState(UpdateEventAdminRequest updateEventAdminRequest, Event event){
-            if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.PUBLISH_EVENT ) {
+    private void checkState(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
+            if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.PUBLISH_EVENT) {
                 if (event.getState() != State.PENDING) {
                     throw new NotPendingEventException("Only pending events can be changed");
                 }
@@ -135,26 +135,26 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
             }
     }
 
-    private void checkOrUpdateTitle(UpdateEventAdminRequest updateEventAdminRequest, Event event){
-        if(updateEventAdminRequest.getTitle() != null) {
+    private void checkOrUpdateTitle(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
+        if (updateEventAdminRequest.getTitle() != null) {
             event.setTitle(updateEventAdminRequest.getTitle());
         }
     }
 
-    private void checkOrUpdateAnnotation(UpdateEventAdminRequest updateEventAdminRequest, Event event){
-        if(updateEventAdminRequest.getAnnotation() != null) {
+    private void checkOrUpdateAnnotation(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
+        if (updateEventAdminRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
         }
     }
 
-    private void checkOrUpdateDescription(UpdateEventAdminRequest updateEventAdminRequest, Event event){
-        if(updateEventAdminRequest.getDescription() != null) {
+    private void checkOrUpdateDescription(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
+        if (updateEventAdminRequest.getDescription() != null) {
             event.setDescription(updateEventAdminRequest.getDescription());
         }
     }
 
     private void checkOrUpdateCategory(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-        if(updateEventAdminRequest.getCategory() != null) {
+        if (updateEventAdminRequest.getCategory() != null) {
             Category category = categoryRepository.findById(updateEventAdminRequest.getCategory()).orElseThrow(() ->
                     new NotFindCategoryException(updateEventAdminRequest.getCategory()));
             event.setCategory(category);
@@ -162,7 +162,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     }
 
     private void checkOrUpdateLocation(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-        if(updateEventAdminRequest.getLocation() != null) {
+        if (updateEventAdminRequest.getLocation() != null) {
             Long oldLocationId = event.getLocationModel().getId();
             LocationModel locationModel = locationRepository
                     .save(locationMapper.toLocationModel(oldLocationId, updateEventAdminRequest.getLocation()));
@@ -170,20 +170,20 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         }
     }
 
-    private void checkOrUpdatePaid(UpdateEventAdminRequest updateEventAdminRequest, Event event){
-        if(updateEventAdminRequest.getPaid() != null) {
+    private void checkOrUpdatePaid(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
+        if (updateEventAdminRequest.getPaid() != null) {
             event.setPaid(updateEventAdminRequest.getPaid());
         }
     }
 
     private void checkOrUpdateParticipantLimit(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-        if(updateEventAdminRequest.getParticipantLimit() != null) {
+        if (updateEventAdminRequest.getParticipantLimit() != null) {
             event.setParticipantLimit(updateEventAdminRequest.getParticipantLimit());
         }
     }
 
     private void checkOrUpdateRequestModeration(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-        if(updateEventAdminRequest.getRequestModeration() != null) {
+        if (updateEventAdminRequest.getRequestModeration() != null) {
             event.setRequestModeration(updateEventAdminRequest.getRequestModeration());
         }
     }

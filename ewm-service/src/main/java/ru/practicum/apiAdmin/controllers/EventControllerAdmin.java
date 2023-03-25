@@ -40,7 +40,7 @@ public class EventControllerAdmin {
 
     @PatchMapping("/{eventId}")
     public EventFullDto patchEvent(@PathVariable(value = "eventId") Long eventId,
-                                   @RequestBody UpdateEventAdminRequest updateEventAdminRequest){
+                                   @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("ApiAdmin. Запрос редактирования данных события с id= {} администратором", eventId);
         return eventServiceAdmin.patchEvent(eventId, updateEventAdminRequest);
     }

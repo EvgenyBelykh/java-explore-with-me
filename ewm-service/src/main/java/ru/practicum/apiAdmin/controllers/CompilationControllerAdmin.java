@@ -2,6 +2,8 @@ package ru.practicum.apiAdmin.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.apiAdmin.services.CompilationServiceAdmin;
 import ru.practicum.common.dto.CompilationDto;
@@ -19,23 +21,24 @@ public class CompilationControllerAdmin {
     private final CompilationServiceAdmin compilationServiceAdmin;
 
     @PostMapping
-    public CompilationDto add(@Valid @RequestBody NewCompilationDto newCopmpilationDto) {
-
-        log.info("Запрос добавления новой подборки событий с заголовком {}", newCopmpilationDto.getTitle());
-        return compilationServiceAdmin.add(newCopmpilationDto);
+    public ResponseEntity<CompilationDto> add(@Valid @RequestBody NewCompilationDto newCompilationDto) {
+        log.info("Запрос добавления новой подборки событий с заголовком {}", newCompilationDto.getTitle());
+        return new ResponseEntity<>(compilationServiceAdmin.add(newCompilationDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{compId}")
-    public void remove(@PathVariable(value = "compId") Long compId) {
+    public ResponseEntity<Void> remove(@PathVariable(value = "compId") Long compId) {
 
-        log.info("Запрос удаления подборки событий с id= {}", compId);
+        log.info("ApiAdmin. Запрос удаления подборки событий с id= {}", compId);
+        compilationServiceAdmin.remove(compId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{compId}")
     public CompilationDto patch(@PathVariable(value = "compId") Long compId,
-                                @Valid @RequestBody UpdateCompilationRequest updateCompilationRequest) {
+                                @RequestBody UpdateCompilationRequest updateCompilationRequest) {
 
-        log.info("Запрос обновления подборки событий с id= {}", compId);
+        log.info("ApiAdmin. Запрос обновления подборки событий с id= {}", compId);
         return compilationServiceAdmin.patch(compId, updateCompilationRequest);
     }
 }

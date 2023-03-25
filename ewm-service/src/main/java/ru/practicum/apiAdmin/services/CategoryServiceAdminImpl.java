@@ -30,7 +30,7 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
         isNameBlank(newCategoryDto);
 
         Category category = categoryRepository.save(categoryMapper.toCategory(newCategoryDto));
-        log.info("Сохранена категория name= {}", newCategoryDto.getName());
+        log.info("ApiAdmin. Сохранена категория name= {}", newCategoryDto.getName());
 
         return categoryMapper.toCategoryDto(category);
     }
@@ -44,7 +44,7 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
 
         categoryRepository.findById(idCat).orElseThrow(() -> new NotFindCategoryException(idCat));
         categoryRepository.deleteById(idCat);
-        log.info("Удалена категория с id={}", idCat);
+        log.info("ApiAdmin. Удалена категория с id={}", idCat);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
         category.setName(newCategoryDto.getName());
         category.setId(idCat);
         categoryRepository.save(category);
-        log.info("Обновлена категория с id={} и name={}", idCat, category.getName());
+        log.info("ApiAdmin. Обновлена категория с id={} и name={}", idCat, category.getName());
 
         return categoryMapper.toCategoryDto(category);
     }

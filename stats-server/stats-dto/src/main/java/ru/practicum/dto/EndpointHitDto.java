@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class EndpointHitDto {
+
     @NotBlank
     private String app;
 

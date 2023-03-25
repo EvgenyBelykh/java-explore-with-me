@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.apiAdmin.services.EventServiceAdmin;
 import ru.practicum.common.dto.EventFullDto;
 import ru.practicum.common.dto.UpdateEventAdminRequest;
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -26,7 +25,7 @@ public class EventControllerAdmin {
                                      @RequestParam(value = "from", defaultValue = "0") Integer from,
                                      @RequestParam(value = "size", defaultValue = "10") Integer size) {
 
-        log.info("Запрос получения информации по событиям по следующим параметрам: " +
+        log.info("ApiAdmin. Запрос получения информации по событиям по следующим параметрам: " +
                 "userIds= {}, " +
                 "states= {}, " +
                 "catIds= {}, " +
@@ -41,8 +40,8 @@ public class EventControllerAdmin {
 
     @PatchMapping("/{eventId}")
     public EventFullDto patchEvent(@PathVariable(value = "eventId") Long eventId,
-                                   @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest){
-        log.info("Запрос редактирования данных события с id= {} администратором", eventId);
+                                   @RequestBody UpdateEventAdminRequest updateEventAdminRequest){
+        log.info("ApiAdmin. Запрос редактирования данных события с id= {} администратором", eventId);
         return eventServiceAdmin.patchEvent(eventId, updateEventAdminRequest);
     }
 }

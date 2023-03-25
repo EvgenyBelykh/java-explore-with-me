@@ -19,13 +19,13 @@ public class CategoryControllerPublic {
     @GetMapping
     public List<CategoryDto> getAll(@RequestParam(value = "from", defaultValue = "0") Integer from,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size) {
-        log.info("Запрос получения категорий по параметрам from= {}, size= {}", from, size);
+        log.info("ApiPublic. Запрос получения категорий по параметрам from= {}, size= {}", from, size);
         return categoryServicePublic.getAll(from, size);
     }
 
     @GetMapping("/{catId}")
     public CategoryDto get(@PathVariable(value = "catId") Long catId) {
-        log.info("Запрос получения категории c id= {}", catId);
+        log.info("ApiPublic. Запрос получения категории c id= {}", catId);
         return categoryServicePublic.get(catId);
     }
 

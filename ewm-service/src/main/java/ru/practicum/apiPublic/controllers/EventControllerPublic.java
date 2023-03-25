@@ -37,7 +37,7 @@ public class EventControllerPublic {
                                       @RequestParam(value = "size", defaultValue = "10") Integer size,
                                       HttpServletRequest request) {
 
-        log.info("Запрос получения событий по параметрам text= {}, categories= {}, paid= {}, rangeStart= {}, " +
+        log.info("ApiPublic. Запрос получения событий по параметрам text= {}, categories= {}, paid= {}, rangeStart= {}, " +
                         "rangeEnd= {}, onlyAvailable= {}, sort= {}, from= {}, size= {}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         return eventServicePublic.getAll(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size,
@@ -48,7 +48,7 @@ public class EventControllerPublic {
     public EventFullDto get(@PathVariable(value = "id") Long id,
                             HttpServletRequest request) {
 
-        log.info("Запрос получения подробной информации об опубликованном событии c id= {}", id);
+        log.info("ApiPublic. Запрос получения подробной информации об опубликованном событии c id= {}", id);
         return eventServicePublic.get(id, request);
     }
 }

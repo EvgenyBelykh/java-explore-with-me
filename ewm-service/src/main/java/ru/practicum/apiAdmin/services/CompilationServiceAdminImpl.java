@@ -14,8 +14,8 @@ import ru.practicum.common.models.Event;
 import ru.practicum.common.repositories.CompilationRepository;
 import ru.practicum.common.repositories.EventRepository;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +30,15 @@ public class CompilationServiceAdminImpl implements CompilationServiceAdmin {
     public CompilationDto add(NewCompilationDto newCompilationDto) {
 
         Iterable<Event> events = eventRepository.findAllById(newCompilationDto.getEvents());
-        Set<Event> eventSet = new HashSet<>();
+        List<Event> eventList = new ArrayList<>();
         for (Event event : events) {
-            eventSet.add(event);
+            eventList.add(event);
         }
 
         Compilation compilation = compilationRepository
-                .save(compilationMapper.toCompilation(newCompilationDto, eventSet));
+                    .save(compilationMapper.toCompilation(newCompilationDto, eventList));
 
-        log.info("Сохранена подборка событий с заголовком {}", newCompilationDto.getTitle());
+        log.info("ApiAdmin. Сохранена подборка событий с заголовком {}", newCompilationDto.getTitle());
         return compilationMapper.toCompilationDto(compilation);
     }
 
@@ -46,7 +46,7 @@ public class CompilationServiceAdminImpl implements CompilationServiceAdmin {
     public void remove(Long compId) {
         compilationRepository.findById(compId).orElseThrow(() -> new NotFindCompilationException(compId));
         compilationRepository.deleteById(compId);
-        log.info("Удалена подборка событий с id= {}", compId);
+        log.info("ApiAdmin. Удалена подборка событий с id= {}", compId);
     }
 
     @Override
@@ -54,26 +54,26 @@ public class CompilationServiceAdminImpl implements CompilationServiceAdmin {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFindCompilationException(compId));
 
-        if(updateCompilationRequest.getTitle() != null) {
+        if (updateCompilationRequest.getTitle() != null) {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
 
-        if(updateCompilationRequest.getPinned() != null) {
+        if (updateCompilationRequest.getPinned() != null) {
             compilation.setPinned(updateCompilationRequest.getPinned());
         }
 
-        if(updateCompilationRequest.getEvents() != null) {
+        if (updateCompilationRequest.getEvents() != null) {
             Iterable<Event> events = eventRepository.findAllById(updateCompilationRequest.getEvents());
-            Set<Event> eventSet = new HashSet<>();
+            List<Event> eventList = new ArrayList<>();
             for (Event event : events) {
-                eventSet.add(event);
+                eventList.add(event);
             }
-            compilation.setEvents(eventSet);
+            compilation.setEvents(eventList);
         }
 
         compilation = compilationRepository.save(compilation);
 
-        log.info("Обновлена подборка событий с id= {}", compId);
+        log.info("ApiAdmin. Обновлена подборка событий с id= {}", compId);
         return compilationMapper.toCompilationDto(compilation);
     }
 

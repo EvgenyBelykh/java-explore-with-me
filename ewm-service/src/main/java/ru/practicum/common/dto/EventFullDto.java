@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.common.enums.State;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +23,7 @@ public class EventFullDto {
     @NotBlank
     private String description;
 
-    private CategoryDto categoryDto;
+    private CategoryDto category;
 
     @NotBlank
     private Location location;
@@ -66,7 +64,8 @@ public class EventFullDto {
     public EventFullDto(Long id,
                         CategoryDto categoryDto,
                         Long confirmedRequests,
-                        LocalDateTime createdOn,
+                        String createdOn,
+                        String eventDate,
                         String description,
                         UserShortDto initiator,
                         Location location,
@@ -76,11 +75,13 @@ public class EventFullDto {
                         Boolean requestModeration,
                         String state,
                         String title,
+                        String annotation,
                         Long views) {
         this.id = id;
-        this.categoryDto = categoryDto;
+        this.category = categoryDto;
         this.confirmedRequests = confirmedRequests;
-        this.createdOn = createdOn.toString();
+        this.createdOn = createdOn;
+        this.eventDate = eventDate;
         this.description = description;
         this.initiator = initiator;
         this.location = location;
@@ -90,9 +91,7 @@ public class EventFullDto {
         this.requestModeration = requestModeration;
         this.state = state;
         this.title = title;
+        this.annotation = annotation;
         this.views = views;
-
-
     }
-
 }

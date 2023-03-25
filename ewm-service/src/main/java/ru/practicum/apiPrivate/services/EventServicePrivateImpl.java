@@ -39,7 +39,6 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
     private final LocationMapper locationMapper;
     private final EventMapper eventMapper;
-    private final CategoryMapper categoryMapper;
     private final UserMapper userMapper;
 
     private final ParticipationRequestMapper participationRequestMapper;
@@ -60,7 +59,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         }
 
         LocationModel locationModel;
-        if (newEventDto.getLocation().getLatitude() == null || newEventDto.getLocation().getLongitude() == null) {
+        if (newEventDto.getLocation().getLat() == null || newEventDto.getLocation().getLon() == null) {
             locationModel = null;
         } else {
             locationModel = locationRepository.save(locationMapper.toLocationModel(null, newEventDto.getLocation()));
@@ -97,7 +96,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
                 .build();
 
         event = eventRepository.save(event);
-        log.info("Сохранено событие: {} пользователем с id={}", event.getTitle(), idUser);
+        log.info("ApiPrivate. Сохранено событие: {} пользователем с id={}", event.getTitle(), idUser);
 
         return eventMapper.toEventFullDto(event);
     }
@@ -105,7 +104,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
     @Override
     public List<EventFullDto> getAllAddedByIdUser(Long idUser, Integer from, Integer size) {
         User initiator = userRepository.findById(idUser).orElseThrow(() -> new NotFindUserException(idUser));
-        UserShortDto userShortDto = userMapper.toUserShortDto(initiator);
+        userMapper.toUserShortDto(initiator);
 
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Event> eventsPage = eventRepository.findAllByInitiatorId(idUser, pageable);
@@ -116,13 +115,10 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         for (Event event : events) {
             eventsFullDto.add(eventMapper.toEventFullDto(
                     event
-//                    categoryMapper.toCategoryDto(event.getCategory()),
-//                    userShortDto,
-//                    locationMapper.toLocation(event.getLocationModel())
             ));
         }
 
-        log.info("Возвращен список событий, добавленных пользователем с id={}", idUser);
+        log.info("ApiPrivate. Возвращен список событий, добавленных пользователем с id={}", idUser);
         return eventsFullDto;
     }
 
@@ -133,7 +129,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
         checkBelongEventToUserInitiator(event, idEvent, idUser);
 
-        log.info("Возвращена полная информация о событии с id= {} добавленном пользователем с id={}", idEvent, idUser);
+        log.info("ApiPrivate. Возвращена полная информация о событии с id= {} добавленном пользователем с id={}", idEvent, idUser);
         return eventMapper.toEventFullDto(event);
     }
 
@@ -168,11 +164,11 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
         List<ParticipationRequest> participationRequests = participationRequestRepository.findAllByEventId(idEvent);
         if (participationRequests == null) {
-            log.info("Возвращен пустой список заявок на участие в событии с id= {}", idEvent);
+            log.info("ApiPrivate. Возвращен пустой список заявок на участие в событии с id= {}", idEvent);
             return Collections.emptyList();
         }
 
-        log.info("Возвращен список с информацией о запросах на участие в событии c id= {} пользователя с id={} " +
+        log.info("ApiPrivate. Возвращен список с информацией о запросах на участие в событии c id= {} пользователя с id={} " +
                 "опубликовашего событие", idEvent, initiatorId);
 
         return participationRequests.stream().map(participationRequestMapper::toParticipationRequestDto)
@@ -191,15 +187,15 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         List<ParticipationRequest> participationRequests = new ArrayList<>();
 
         for (ParticipationRequest participationRequestIterable : participationRequestIterables) {
-            if(participationRequestIterable.getStatus() != Status.PENDING) {
-                throw new NotPendingParticipationRequestException("Request must have status PENDING");
-            }
             participationRequests.add(participationRequestIterable);
+        }
+
+        if (event.getParticipantLimit() > 0 && (Objects.equals(event.getConfirmedRequests(), Long.valueOf(event.getParticipantLimit())))) {
+            throw new FullConfirmedRequestException(idEvent);
         }
 
         //если необходимо подтвердить заявки
         if (Objects.equals(eventRequestStatusUpdateRequest.getStatus(), Status.CONFIRMED.toString())) {
-            if (!event.getRequestModeration()) {
                 if (event.getParticipantLimit() == 0) {
                     for (ParticipationRequest participationRequest : participationRequests) {
                         participationRequest.setStatus(Status.CONFIRMED);
@@ -243,18 +239,18 @@ public class EventServicePrivateImpl implements EventServicePrivate {
                                 event.getId(), participantLimit);
                     }
                 }
-                //return toEventRequestStatusUpdateResult(participationRequests, event.getId());
-            }
 
             //если необходимо отклонить заявки
         } else if (Objects.equals(eventRequestStatusUpdateRequest.getStatus(), Status.REJECTED.toString())) {
             for (ParticipationRequest participationRequest : participationRequests) {
+                if (participationRequest.getStatus() == Status.CONFIRMED) {
+                    throw new RequestConfirmedException();
+                }
                 participationRequest.setStatus(Status.REJECTED);
                 participationRequestRepository.save(participationRequest);
             }
-            log.info("Заявкам с id= {} отклонено участие в событии с id= {}",
+            log.info("ApiPrivate. Заявкам с id= {} отклонено участие в событии с id= {}",
                     participationRequests, event.getId());
-            //return toEventRequestStatusUpdateResult(participationRequests, event.getId());
         } else {
             throw new NotConfirmedOrRejectedEventStatusUpdateException("ParticipationUpdateRequest must have status" +
                     " CONFIRMED or REJECTED");
@@ -279,18 +275,9 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         eventRequestStatusUpdateResult.setConfirmedRequests(confirmedRequests);
         eventRequestStatusUpdateResult.setRejectedRequests(rejectedRequests);
 
-        log.info("Возвращен результат изменения статуса заявок на участие в событии с id= {}", eventId);
+        log.info("ApiPrivate. Возвращен результат изменения статуса заявок на участие в событии с id= {}", eventId);
         return eventRequestStatusUpdateResult;
     }
-
-//    private EventFullDto toEventFullDto (Event event) {
-//        return eventMapper.toEventFullDto(
-//                event,
-//                categoryMapper.toCategoryDto(event.getCategory()),
-//                userMapper.toUserShortDto(event.getInitiator()),
-//                (event.getLocationModel() != null) ? locationMapper.toLocation(event.getLocationModel()) : null
-//        );
-//    }
 
     private void checkBelongEventToUserInitiator(Event event, Long idEvent, Long idUser) {
         if (event.getInitiator().getId() != idUser) {
@@ -299,24 +286,23 @@ public class EventServicePrivateImpl implements EventServicePrivate {
     }
 
     private void checkState(UpdateEventUserRequest updateEventUserRequest, Event event){
-        if(event.getState() != State.CANCELED ||
-                (event.getState() != State.PENDING)) {
+        if (event.getState() != State.CANCELED && (event.getState() != State.PENDING)) {
             throw new PendingOrCanceledEventException();
         } else {
-            if(Objects.equals(updateEventUserRequest.getStateAction(), StateAction.CANCEL_REVIEW.toString())) {
+            if (Objects.equals(updateEventUserRequest.getStateAction(), StateAction.CANCEL_REVIEW.toString())) {
                 event.setState(State.CANCELED);
-            } else if(Objects.equals(updateEventUserRequest.getStateAction(), StateAction.SEND_TO_REVIEW.toString())) {
+            } else if (Objects.equals(updateEventUserRequest.getStateAction(), StateAction.SEND_TO_REVIEW.toString())) {
                 event.setState(State.PENDING);
             }
         }
     }
 
     private void checkOrUpdateEventDate(UpdateEventUserRequest updateEventUserRequest, Event event){
-        if(event.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
+        if (event.getEventDate().minusHours(2).isBefore(LocalDateTime.now())) {
             throw new TooLateEventException(event.getTitle());
         } else {
-            if(updateEventUserRequest.getEventDate() != null) {
-                if(LocalDateTime.parse(updateEventUserRequest.getEventDate(), dateTimeFormatter).minusHours(2)
+            if (updateEventUserRequest.getEventDate() != null) {
+                if (LocalDateTime.parse(updateEventUserRequest.getEventDate(), dateTimeFormatter).minusHours(2)
                         .isBefore(LocalDateTime.now())){
                     throw new TooLateEventException(updateEventUserRequest.getTitle());
                 } else {
@@ -327,25 +313,25 @@ public class EventServicePrivateImpl implements EventServicePrivate {
     }
 
     private void checkOrUpdateTitle(UpdateEventUserRequest updateEventUserRequest, Event event){
-        if(updateEventUserRequest.getTitle() != null) {
+        if (updateEventUserRequest.getTitle() != null) {
             event.setTitle(updateEventUserRequest.getTitle());
         }
     }
 
     private void checkOrUpdateAnnotation(UpdateEventUserRequest updateEventUserRequest, Event event){
-        if(updateEventUserRequest.getAnnotation() != null) {
+        if (updateEventUserRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
     }
 
     private void checkOrUpdateDescription(UpdateEventUserRequest updateEventUserRequest, Event event){
-        if(updateEventUserRequest.getDescription() != null) {
+        if (updateEventUserRequest.getDescription() != null) {
             event.setDescription(updateEventUserRequest.getDescription());
         }
     }
 
     private void checkOrUpdateCategory(UpdateEventUserRequest updateEventUserRequest, Event event){
-        if(updateEventUserRequest.getCategory() != null) {
+        if (updateEventUserRequest.getCategory() != null) {
             Category category = categoryRepository.findById(updateEventUserRequest.getCategory()).orElseThrow(() ->
                     new NotFindCategoryException(updateEventUserRequest.getCategory()));
             event.setCategory(category);
@@ -353,7 +339,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
     }
 
     private void checkOrUpdateLocation(UpdateEventUserRequest updateEventUserRequest, Event event) {
-        if(updateEventUserRequest.getLocation() != null) {
+        if (updateEventUserRequest.getLocation() != null) {
             Long oldLocationId = event.getLocationModel().getId();
             LocationModel locationModel = locationRepository
                     .save(locationMapper.toLocationModel(oldLocationId, updateEventUserRequest.getLocation()));
@@ -362,19 +348,19 @@ public class EventServicePrivateImpl implements EventServicePrivate {
     }
 
     private void checkOrUpdatePaid(UpdateEventUserRequest updateEventUserRequest, Event event){
-        if(updateEventUserRequest.getPaid() != null) {
+        if (updateEventUserRequest.getPaid() != null) {
             event.setPaid(updateEventUserRequest.getPaid());
         }
     }
 
     private void checkOrUpdateParticipantLimit(UpdateEventUserRequest updateEventUserRequest, Event event) {
-        if(updateEventUserRequest.getParticipantLimit() != null) {
+        if (updateEventUserRequest.getParticipantLimit() != null) {
             event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
         }
     }
 
     private void checkOrUpdateRequestModeration(UpdateEventUserRequest updateEventUserRequest, Event event) {
-        if(updateEventUserRequest.getRequestModeration() != null) {
+        if (updateEventUserRequest.getRequestModeration() != null) {
             event.setRequestModeration(updateEventUserRequest.getRequestModeration());
         }
     }

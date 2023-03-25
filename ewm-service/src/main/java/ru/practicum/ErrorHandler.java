@@ -1,7 +1,6 @@
 package ru.practicum;
 
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +19,7 @@ public class ErrorHandler {
             NotPendingParticipationRequestException.class,
             NotConfirmedOrRejectedEventStatusUpdateException.class,
             MethodArgumentNotValidException.class,
+            NotFindEventsException.class,
             MethodArgumentTypeMismatchException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleBadRequestException(Exception e) {
@@ -60,7 +60,8 @@ public class ErrorHandler {
             NotPublishedPrivateEventException.class,
             FullConfirmedRequestException.class,
             EventUseThisCategoryException.class,
-            PSQLException.class})
+            RequestConfirmedException.class
+            })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflictException(Exception e) {
         log.info("409 Conflict");

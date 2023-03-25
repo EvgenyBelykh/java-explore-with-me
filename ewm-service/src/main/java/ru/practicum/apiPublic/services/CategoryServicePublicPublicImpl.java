@@ -29,11 +29,11 @@ public class CategoryServicePublicPublicImpl implements CategoryServicePublic {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Category> categories = categoryRepository.findAll(pageable);
         if (categories.getContent().isEmpty()) {
-            log.info("Возвращен пустой список");
+            log.info("ApiPublic. Возвращен пустой список");
             return Collections.emptyList();
         }
 
-        log.info("Возвращены категории по параметрам from= {}, size= {}", from, size);
+        log.info("ApiPublic. Возвращены категории по параметрам from= {}, size= {}", from, size);
         return categories.stream().map(categoryMapper::toCategoryDto).collect(Collectors.toList());
     }
 
@@ -42,7 +42,7 @@ public class CategoryServicePublicPublicImpl implements CategoryServicePublic {
         Category category = categoryRepository.findById(catId).orElseThrow(() ->
                 new NotFindCategoryException(catId));
 
-        log.info("Возвращены категория c id= {}", catId);
+        log.info("ApiPublic. Возвращены категория c id= {}", catId);
         return categoryMapper.toCategoryDto(category);
     }
 }

@@ -16,6 +16,7 @@ import ru.practicum.common.repositories.EventRepository;
 import ru.practicum.common.repositories.ParticipationRequestRepository;
 import ru.practicum.common.repositories.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
         userRepository.findById(idUser).orElseThrow(() -> new NotFindUserException(idUser));
         List<ParticipationRequest> participationRequests = participationRequestRepository.findAllByRequesterId(idUser);
 
-        log.info("Возвращена информация о заявках пользователя с id={} на участие в чужих событиях",
+        log.info("ApiPrivate. Возвращена информация о заявках пользователя с id={} на участие в чужих событиях",
                 idUser);
 
         if(participationRequests.isEmpty()) {
@@ -52,41 +53,40 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFindEventException(eventId));
         User requester = userRepository.findById(idUser).orElseThrow(() -> new NotFindUserException(idUser));
 
-        participationRequestRepository.findByRequesterIdAndEventId(eventId, idUser)
-                .orElseThrow(() -> new ExistParticipationRequestFromUserException(eventId, idUser));
+        if (participationRequestRepository.findByRequesterIdAndEventId(eventId, idUser).isPresent()) {
+            throw new ExistParticipationRequestFromUserException(eventId, idUser);
+        }
 
-        if(event.getInitiator().getId() == idUser) {
+        if (event.getInitiator().getId() == idUser) {
             throw new EventBelongThisUserException(eventId, idUser);
         }
 
-        if(!(event.getState() == State.PUBLISHED)){
+        if (!(event.getState() == State.PUBLISHED)){
             throw new NotPublishedPrivateEventException("Event must be published");
         }
 
-        if(event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
+        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
             throw new FullConfirmedRequestException(eventId);
         }
 
         ParticipationRequest participationRequest = new ParticipationRequest();
         participationRequest.setEvent(event);
         participationRequest.setRequester(requester);
+        participationRequest.setCreated(LocalDateTime.now());
 
-        if(!event.getRequestModeration()) {
+        if (!event.getRequestModeration()) {
             participationRequest.setStatus(Status.CONFIRMED);
-            participationRequest = participationRequestRepository.save(participationRequest);
-            log.info("Сохранен и подтвежден запрос на участие на событие с id= {} от пользователя с id= {}",
-                    eventId, idUser);
 
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
             log.info("Обновлено количество участников в событии с id= {}", eventId);
 
-            return participationRequestMapper.toParticipationRequestDto(participationRequest);
+        } else {
+            participationRequest.setStatus(Status.PENDING);
         }
 
-        participationRequest.setStatus(Status.PENDING);
         participationRequest = participationRequestRepository.save(participationRequest);
-        log.info("Сохранен и отправлен запрос на участие на событие с id= {} от пользователя с id= {}",
+        log.info("ApiPrivate. vСохранен и отправлен запрос на участие на событие с id= {} от пользователя с id= {}",
                 eventId, idUser);
 
         return participationRequestMapper.toParticipationRequestDto(participationRequest);
@@ -103,12 +103,8 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
 
         participationRequest.setStatus(Status.CANCELED);
         participationRequest = participationRequestRepository.save(participationRequest);
-        log.info("Пользователь с id= {} отменил свою заявку с id= {} на участие в событии с id= {}",
+        log.info("ApiPrivate. Пользователь с id= {} отменил свою заявку с id= {} на участие в событии с id= {}",
                 idUser, requestId, eventId);
-
-        event.setConfirmedRequests(event.getConfirmedRequests() - 1);
-        eventRepository.save(event);
-        log.info("Обновлено количество участников в событии с id= {}", eventId);
 
         return participationRequestMapper.toParticipationRequestDto(participationRequest);
     }

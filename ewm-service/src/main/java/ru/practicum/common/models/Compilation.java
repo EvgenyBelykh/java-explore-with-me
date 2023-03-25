@@ -1,13 +1,9 @@
 package ru.practicum.common.models;
 
 import lombok.*;
-import org.hibernate.validator.internal.util.stereotypes.Immutable;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "compilations", schema = "public")
@@ -31,13 +27,13 @@ public class Compilation {
 
     @ManyToMany
     @JoinTable(
-            name = "compilationEvents",
-            joinColumns = {@JoinColumn(name = "compilation_id")},
-            inverseJoinColumns = {@JoinColumn(name = "event_id")}
+            name = "compilation_events",
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
     )
-    private Set<Event> events;
+    private List<Event> events;
 
-    public Compilation(String title, Boolean pinned, Set<Event> events) {
+    public Compilation(String title, Boolean pinned, List<Event> events) {
         this.title = title;
         this.pinned = pinned;
         this.events = events;

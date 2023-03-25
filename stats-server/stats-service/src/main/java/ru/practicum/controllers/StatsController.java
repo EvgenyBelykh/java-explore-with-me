@@ -7,11 +7,9 @@ import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.model.ViewStats;
 import ru.practicum.services.StatService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping
 @Slf4j
 @RequiredArgsConstructor
 public class StatsController {
@@ -23,7 +21,7 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
-    public EndpointHitDto hit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
+    public EndpointHitDto hit(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("Запрос сохранения информации об отправке запроса пользователем с ip={} на адрес={} ",
                 endpointHitDto.getIp(), endpointHitDto.getUri());
 

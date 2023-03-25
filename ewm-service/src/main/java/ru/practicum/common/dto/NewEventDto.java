@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -18,12 +16,15 @@ import javax.validation.constraints.NotNull;
 public class NewEventDto {
 
     @Length(min = 3, max = 120, message = "Неверные данные: размер заголовка от 3 до 120 символов")
+    @NotNull
     private String title;
 
     @Length(min = 20, max = 2000, message = "Неверные данные: размер аннотации от 20 до 2000 символов")
+    @NotNull
     private String annotation;
 
     @Length(min = 20, max = 7000, message = "Неверные данные: размер описания от 20 до 7000 символов")
+    @NotNull
     private String description;
 
     @NotNull(message = "Необходимо задать категорию")

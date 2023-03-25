@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -13,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class UpdateCompilationRequest {
-    @NotBlank
     private String title;
 
     private Boolean pinned;

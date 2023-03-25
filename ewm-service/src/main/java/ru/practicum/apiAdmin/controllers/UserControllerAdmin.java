@@ -2,6 +2,8 @@ package ru.practicum.apiAdmin.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.apiAdmin.services.UserServiceAdmin;
 import ru.practicum.common.dto.NewUserRequest;
@@ -18,22 +20,23 @@ public class UserControllerAdmin {
     private final UserServiceAdmin userServiceAdmin;
 
     @PostMapping
-    public UserDto add(@Valid @RequestBody NewUserRequest newUserRequest) {
-        log.info("Запрос добавления пользователя с email {}", newUserRequest.getEmail());
-        return userServiceAdmin.add(newUserRequest);
+    public ResponseEntity<UserDto> add(@Valid @RequestBody NewUserRequest newUserRequest) {
+        log.info("ApiAdmin. Запрос добавления пользователя с email {}", newUserRequest.getEmail());
+        return new ResponseEntity<>(userServiceAdmin.add(newUserRequest), HttpStatus.CREATED);
     }
 
     @GetMapping
     public List<UserDto> get(@RequestParam(value = "from", defaultValue = "0") Integer from,
                              @RequestParam(value = "size", defaultValue = "10") Integer size,
                              @RequestParam(value = "ids", required = false) List<Long> ids) {
-        log.info("Запрос получения всех пользователей");
+        log.info("ApiAdmin. Запрос получения всех пользователей");
         return userServiceAdmin.get(from, size, ids);
     }
 
     @DeleteMapping("/{id}")
-    public void remove(@PathVariable("id") Long idUser) {
+    public ResponseEntity<Void> remove(@PathVariable("id") Long idUser) {
         log.info("Запрос удаления пользователя с id {}", idUser);
         userServiceAdmin.remove(idUser);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

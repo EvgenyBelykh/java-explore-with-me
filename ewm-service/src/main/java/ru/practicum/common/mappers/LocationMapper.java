@@ -10,8 +10,8 @@ public class LocationMapper {
     public LocationModel toLocationModel(Long id, Location location) {
         return new LocationModel(
                 id,
-                location.getLatitude(),
-                location.getLongitude());
+                location.getLat(),
+                location.getLon());
     }
 
     public Location toLocation(LocationModel locationModel) {

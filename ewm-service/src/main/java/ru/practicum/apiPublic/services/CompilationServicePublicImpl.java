@@ -28,22 +28,28 @@ public class CompilationServicePublicImpl implements CompilationServicePublic {
     @Override
     public List<CompilationDto> getAll(Integer from, Integer size, Boolean pinned) {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Compilation> compilations = compilationRepository.findAllByPinned(pinned, pageable);
+        Page<Compilation> compilations;
+        if (pinned != null) {
+            compilations = compilationRepository.findAllByPinned(pinned, pageable);
+        } else {
+            compilations = compilationRepository.findAll(pageable);
+        }
+
         if (compilations.getContent().isEmpty()) {
-            log.info("Возвращен пустой список");
+            log.info("ApiPublic. Возвращен пустой список");
             return Collections.emptyList();
         }
 
-        log.info("Возвращены публичные подборки событий по параметрам from= {}, size= {}, pinned= {}",
+        log.info("ApiPublic. Возвращены публичные подборки событий по параметрам from= {}, size= {}, pinned= {}",
                 from, size, pinned);
-        return compilations.stream().map(compilationMapper::toCompilationDto).collect(Collectors.toList());
+        return compilations.getContent().stream().map(compilationMapper::toCompilationDto).collect(Collectors.toList());
     }
 
     @Override
     public CompilationDto get(Long compId) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFindCompilationException(compId));
-        log.info("Возвращена подборка событий c id= {}", compId);
+        log.info("ApiPublic. Возвращена подборка событий c id= {}", compId);
         return compilationMapper.toCompilationDto(compilation);
     }
 }

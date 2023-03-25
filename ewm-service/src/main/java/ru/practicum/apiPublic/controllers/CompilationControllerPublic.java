@@ -19,15 +19,15 @@ public class CompilationControllerPublic {
     @GetMapping
     public List<CompilationDto> get(@RequestParam(value = "from", defaultValue = "0") Integer from,
                                     @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                    @RequestParam(value = "pinned") Boolean pinned) {
-        log.info("Запрос получения публичных подборок событий по параметрам from= {}, size= {}, pinned= {}",
+                                    @RequestParam(value = "pinned", defaultValue = "false") Boolean pinned) {
+        log.info("ApiPublic. Запрос получения публичных подборок событий по параметрам from= {}, size= {}, pinned= {}",
                 from, size, pinned);
         return compilationServicePublic.getAll(from, size, pinned);
     }
 
     @GetMapping("/{compId}")
     public CompilationDto get(@PathVariable(value = "compId") Long compId) {
-        log.info("Запрос получения подборки событий c id= {}", compId);
+        log.info("ApiPublic. Запрос получения подборки событий c id= {}", compId);
         return compilationServicePublic.get(compId);
     }
 }

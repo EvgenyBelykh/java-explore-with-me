@@ -9,10 +9,8 @@ import ru.practicum.common.dto.UpdateEventAdminRequest;
 import ru.practicum.common.enums.State;
 import ru.practicum.common.enums.StateAction;
 import ru.practicum.common.exceptions.*;
-import ru.practicum.common.mappers.CategoryMapper;
 import ru.practicum.common.mappers.EventMapper;
 import ru.practicum.common.mappers.LocationMapper;
-import ru.practicum.common.mappers.UserMapper;
 import ru.practicum.common.models.Category;
 import ru.practicum.common.models.Event;
 import ru.practicum.common.models.LocationModel;
@@ -40,9 +38,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     private final LocationRepository locationRepository;
 
     private final EventMapper eventMapper;
-    private final UserMapper userMapper;
     private final LocationMapper locationMapper;
-    private final CategoryMapper categoryMapper;
 
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -60,7 +56,6 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
             throw new NotFindUsersException("Данных пользователей нет в базе");
         }
 
-        //Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "id"));
         List<Event> events =eventRepository.privateSearch(
                 userIds,
                 toStateEnums(states),
@@ -75,19 +70,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
             return Collections.emptyList();
         }
 
-        //List<Event> events = eventsPage.getContent();
-        //List<EventFullDto> eventsFullDto = new ArrayList<>();
-
-//        for (Event event : events) {
-//            eventsFullDto.add(eventMapper.toEventFullDto(
-//                    event,
-//                    categoryMapper.toCategoryDto(event.getCategory()),
-//                    userMapper.toUserShortDto(event.getInitiator()),
-//                    locationMapper.toLocation(event.getLocationModel())
-//            ));
-//        }
-
-        log.info("Возвращена информация по событиям по следующим параметрам: " +
+        log.info("ApiAdmin. Возвращена информация по событиям по следующим параметрам: " +
                         "userIds= {}, " +
                         "states= {}, " +
                         "catIds= {}, " +
@@ -116,7 +99,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         checkOrUpdateRequestModeration(updateEventAdminRequest, event);
 
         eventRepository.save(event);
-        log.info("Обновлено событие с id= {}", event.getId());
+        log.info("ApiAdmin. Обновлено событие с id= {}", event.getId());
         return toEventFullDto(event);
     }
 
@@ -136,20 +119,19 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     }
 
     private void checkState(UpdateEventAdminRequest updateEventAdminRequest, Event event){
-            if(StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.PUBLISH_EVENT &
-                    event.getState() != State.PENDING) {
-                throw new NotPendingEventException("Only pending events can be changed");
-            }
-
-            if(StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.REJECT_EVENT &
-                    event.getState() == State.PUBLISHED) {
-                throw new PublishedEventException();
-            }
-
-            if(StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.PUBLISH_EVENT) {
+            if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.PUBLISH_EVENT ) {
+                if (event.getState() != State.PENDING) {
+                    throw new NotPendingEventException("Only pending events can be changed");
+                }
                 event.setState(State.PUBLISHED);
-            } else if(StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.REJECT_EVENT) {
-                event.setState(State.REJECTED);
+                event.setPublishedOn(LocalDateTime.now());
+            }
+
+            if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.REJECT_EVENT) {
+                if (event.getState() == State.PUBLISHED) {
+                    throw new PublishedEventException();
+                }
+                event.setState(State.CANCELED);
             }
     }
 
@@ -209,9 +191,6 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     private EventFullDto toEventFullDto (Event event) {
         return eventMapper.toEventFullDto(
                 event
-//                categoryMapper.toCategoryDto(event.getCategory()),
-//                userMapper.toUserShortDto(event.getInitiator()),
-//                locationMapper.toLocation(event.getLocationModel())
         );
     }
 

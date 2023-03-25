@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "ParticipationRequests", schema = "public")
+@Table(name = "participation_requests", schema = "public")
 
 @AllArgsConstructor
 @RequiredArgsConstructor

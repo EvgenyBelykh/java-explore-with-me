@@ -10,6 +10,7 @@ import ru.practicum.common.models.LocationModel;
 import ru.practicum.common.models.User;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 @RequiredArgsConstructor
@@ -19,60 +20,15 @@ public class EventMapper {
     private final UserMapper userMapper;
     private final LocationMapper locationMapper;
 
-
-    public Event toEvent(NewEventDto newEventDto,
-                         Category category,
-                         LocationModel locationModel,
-                         User initiator,
-                         LocalDateTime eventDate,
-                         LocalDateTime createdOn,
-                         State state,
-                         Long views) {
-        return new Event(
-                newEventDto.getTitle(),
-                newEventDto.getAnnotation(),
-                newEventDto.getDescription(),
-                category,
-                locationModel,
-                initiator,
-                eventDate,
-                createdOn,
-                newEventDto.getRequestModeration(),
-                newEventDto.getPaid(),
-                newEventDto.getParticipantLimit(),
-                state,
-                views
-        );
-    }
-
-//    public EventFullDto toEventFullDto(Event event,
-//                                       CategoryDto categoryDto,
-//                                       UserShortDto userShortDto,
-//                                       Location location) {
-//        return new EventFullDto(
-//                event.getId(),
-//                categoryDto,
-//                event.getConfirmedRequests(),
-//                event.getCreatedOn(),
-//                event.getDescription(),
-//                userShortDto,
-//                location,
-//                event.getPaid(),
-//                event.getParticipantLimit(),
-//                event.getPublishedOn(),
-//                event.getRequestModeration(),
-//                event.getState(),
-//                event.getTitle(),
-//                event.getViews()
-//                );
-//    }
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public EventFullDto toEventFullDto(Event event) {
         return new EventFullDto(
                 event.getId(),
                 categoryMapper.toCategoryDto(event.getCategory()),
                 event.getConfirmedRequests(),
-                event.getCreatedOn(),
+                event.getCreatedOn().format(dateTimeFormatter),
+                event.getEventDate().format(dateTimeFormatter),
                 event.getDescription(),
                 userMapper.toUserShortDto(event.getInitiator()),
                 event.getLocationModel() != null ? locationMapper.toLocation(event.getLocationModel()) : null,
@@ -82,6 +38,7 @@ public class EventMapper {
                 event.getRequestModeration(),
                 event.getState().toString(),
                 event.getTitle(),
+                event.getAnnotation(),
                 event.getViews()
         );
     }
@@ -93,7 +50,7 @@ public class EventMapper {
                 event.getAnnotation(),
                 categoryMapper.toCategoryDto(event.getCategory()),
                 userMapper.toUserShortDto(event.getInitiator()),
-                event.getEventDate().toString(),
+                event.getEventDate().format(dateTimeFormatter),
                 event.getConfirmedRequests(),
                 event.getPaid(),
                 event.getViews()

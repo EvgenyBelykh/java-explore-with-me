@@ -36,7 +36,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
         }
 
         User user = userRepository.save(userMapper.toUser(newUserRequest));
-        log.info("Сохранение пользователя в БД с id: {}", user.getId());
+        log.info("ApiAdmin. Сохранение пользователя в БД с id: {}", user.getId());
         return userMapper.toUserDto(user);
     }
 
@@ -44,7 +44,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
     public void remove(Long idUser) {
         userRepository.findById(idUser).orElseThrow(() -> new NotFindUserException(idUser));
         userRepository.deleteById(idUser);
-        log.info("Удален пользователь с id={}", idUser);
+        log.info("ApiAdmin. Удален пользователь с id={}", idUser);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
             for (User user : users) {
                 userDtoList.add(userMapper.toUserDto(user));
             }
-            log.info("Возвращен список пользователей по запросу списка идентификаторов: {} ", ids);
+            log.info("ApiAdmin. Возвращен список пользователей по запросу списка идентификаторов: {} ", ids);
             return userDtoList;
         } else {
             Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "id"));
@@ -63,7 +63,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
             if(userPage.getContent().isEmpty()) {
                 throw new NotFindUsersException("Нет данных для вывода или база пуста.");
             }
-            log.info("Возвращен список пользователей с пагинацией  от пользователя с id= {} размером {}", from, size);
+            log.info("ApiAdmin. Возвращен список пользователей с пагинацией  от пользователя с id= {} размером {}", from, size);
             return userPage.getContent().stream().map(userMapper::toUserDto).collect(Collectors.toList());
         }
     }

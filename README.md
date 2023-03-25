@@ -1,6 +1,6 @@
 # explore-with-me
 Template repository for Explore-with-me project.
-![diagram](https://github.com/EvgenyBelykh/explore-with-me/blob/main/explore-with-me.png)
+![diagram](https://github.com/EvgenyBelykh/java-explore-with-me/blob/main_svc/explore-with-me.png)
 
 ## Code from dbdiagram.io:
 

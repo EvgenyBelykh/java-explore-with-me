@@ -46,7 +46,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     public List<EventFullDto> getAll(List<Long> userIds, List<String> states, List<Long> catIds,
                                      String rangeStart, String rangeEnd, Integer from, Integer size) {
         Iterable<User> userIterable = userRepository.findAllById(userIds);
-        List<User> users  = new ArrayList<>();
+        List<User> users = new ArrayList<>();
         for (User user : userIterable) {
             if (user != null) {
                 users.add(user);
@@ -64,7 +64,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
                 rangeEnd != null ? LocalDateTime.parse(rangeEnd, dateTimeFormatter) : null,
                 from,
                 size
-                );
+        );
 
         if (events.size() == 0) {
             return Collections.emptyList();
@@ -119,20 +119,20 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     }
 
     private void checkState(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-            if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.PUBLISH_EVENT) {
-                if (event.getState() != State.PENDING) {
-                    throw new NotPendingEventException("Only pending events can be changed");
-                }
-                event.setState(State.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
+        if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.PUBLISH_EVENT) {
+            if (event.getState() != State.PENDING) {
+                throw new NotPendingEventException("Only pending events can be changed");
             }
+            event.setState(State.PUBLISHED);
+            event.setPublishedOn(LocalDateTime.now());
+        }
 
-            if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.REJECT_EVENT) {
-                if (event.getState() == State.PUBLISHED) {
-                    throw new PublishedEventException();
-                }
-                event.setState(State.CANCELED);
+        if (StateAction.valueOf(updateEventAdminRequest.getStateAction()) == StateAction.REJECT_EVENT) {
+            if (event.getState() == State.PUBLISHED) {
+                throw new PublishedEventException();
             }
+            event.setState(State.CANCELED);
+        }
     }
 
     private void checkOrUpdateTitle(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
@@ -188,7 +188,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         }
     }
 
-    private EventFullDto toEventFullDto (Event event) {
+    private EventFullDto toEventFullDto(Event event) {
         return eventMapper.toEventFullDto(
                 event
         );

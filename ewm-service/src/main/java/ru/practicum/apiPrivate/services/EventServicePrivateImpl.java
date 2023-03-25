@@ -259,8 +259,9 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         return toEventRequestStatusUpdateResult(participationRequests, event.getId());
     }
 
-    private EventRequestStatusUpdateResult toEventRequestStatusUpdateResult(List<ParticipationRequest> participationRequests,
-                                                                            Long eventId){
+    private EventRequestStatusUpdateResult toEventRequestStatusUpdateResult(
+            List<ParticipationRequest> participationRequests, Long eventId) {
+
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
         for (ParticipationRequest participationRequest : participationRequests) {

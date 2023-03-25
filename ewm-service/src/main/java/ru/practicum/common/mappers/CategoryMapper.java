@@ -8,11 +8,11 @@ import ru.practicum.common.models.Category;
 @Component
 public class CategoryMapper {
 
-    public Category toCategory(NewCategoryDto newCategoryDto){
+    public Category toCategory(NewCategoryDto newCategoryDto) {
         return new Category(newCategoryDto.getName());
     }
 
-    public CategoryDto toCategoryDto(Category category){
+    public CategoryDto toCategoryDto(Category category) {
         return new CategoryDto(category.getId(), category.getName());
     }
 }

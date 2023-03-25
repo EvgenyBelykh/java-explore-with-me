@@ -9,5 +9,6 @@ import ru.practicum.common.models.Event;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, CustomEventRepository {
     Page<Event> findAllByInitiatorId(Long idUser, Pageable pageable);
+
     Boolean existsByCategoryId(Long idCat);
 }

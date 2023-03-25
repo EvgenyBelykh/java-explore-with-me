@@ -2,6 +2,8 @@ package ru.practicum.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.model.ViewStats;
@@ -21,11 +23,11 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
-    public EndpointHitDto hit(@RequestBody EndpointHitDto endpointHitDto) {
+    public ResponseEntity<EndpointHitDto> hit(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("Запрос сохранения информации об отправке запроса пользователем с ip={} на адрес={} ",
                 endpointHitDto.getIp(), endpointHitDto.getUri());
 
-        return statService.add(endpointHitDto);
+        return new ResponseEntity<>(statService.add(endpointHitDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")

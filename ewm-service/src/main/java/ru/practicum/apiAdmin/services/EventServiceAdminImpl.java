@@ -21,7 +21,6 @@ import ru.practicum.common.repositories.CategoryRepository;
 import ru.practicum.common.repositories.EventRepository;
 import ru.practicum.common.repositories.LocationRepository;
 import ru.practicum.common.repositories.UserRepository;
-import ru.practicum.dto.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.*;

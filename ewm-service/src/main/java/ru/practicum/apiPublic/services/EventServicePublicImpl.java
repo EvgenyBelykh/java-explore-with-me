@@ -15,7 +15,6 @@ import ru.practicum.common.mappers.EndpointHitMapper;
 import ru.practicum.common.mappers.EventMapper;
 import ru.practicum.common.models.Event;
 import ru.practicum.common.repositories.EventRepository;
-import ru.practicum.dto.ViewStats;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;

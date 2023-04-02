@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 public class StatsClient extends BaseClient {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final ObjectMapper mapper = new ObjectMapper();
-    private final TypeReference<List<ViewStats>> mapType = new TypeReference<>() {
-    };
+    private final TypeReference<List<ViewStats>> mapType = new TypeReference<>() {};
 
     @Autowired
     public StatsClient(@Value("${stats-service.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -75,6 +74,7 @@ public class StatsClient extends BaseClient {
                         this::getEventIdFromURI, ViewStats::getHits))
                 : Collections.emptyMap();
     }
+
     private Long getEventIdFromURI(ViewStats e) {
         return Long.parseLong(e.getUri().substring(e.getUri().lastIndexOf("/") + 1));
     }

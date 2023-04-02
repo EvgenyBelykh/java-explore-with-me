@@ -61,7 +61,7 @@ public class EventServicePublicImpl implements EventServicePublic {
         List<EventShortDto> eventShortDtoList = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             eventShortDtoList.add(eventMapper.toEventShortDto(events.get(i),
-                    viewStatsList!= null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
+                    viewStatsList != null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
                             viewStatsList.get(i).getHits() : 0L));
         }
         return eventShortDtoList;

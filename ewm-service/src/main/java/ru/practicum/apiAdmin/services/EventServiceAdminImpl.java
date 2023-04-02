@@ -95,7 +95,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         List<EventFullDto> eventFullDtoList = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             eventFullDtoList.add(eventMapper.toEventFullDto(events.get(i),
-                    viewStatsList!= null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
+                    viewStatsList != null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
                             viewStatsList.get(i).getHits() : 0L));
         }
         return eventFullDtoList;

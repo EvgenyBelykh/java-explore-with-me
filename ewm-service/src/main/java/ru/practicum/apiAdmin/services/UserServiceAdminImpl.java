@@ -67,6 +67,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
             return userPage.getContent().stream().map(userMapper::toUserDto).collect(Collectors.toList());
         }
     }
+
     @Override
     public boolean isEmailAlreadyInUse(String email) {
         return userRepository.existsByEmailContaining(email);

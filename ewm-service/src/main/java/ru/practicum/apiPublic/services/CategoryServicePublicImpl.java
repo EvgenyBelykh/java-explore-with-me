@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryServicePublicPublicImpl implements CategoryServicePublic {
+public class CategoryServicePublicImpl implements CategoryServicePublic {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 

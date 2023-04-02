@@ -45,7 +45,6 @@ public class StatServiceImpl implements StatService {
                 uris,
                 unique
         );
-
         return stats;
     }
 }

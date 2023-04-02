@@ -24,10 +24,7 @@ import ru.practicum.common.repositories.UserRepository;
 import ru.practicum.dto.ViewStats;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,15 +87,10 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
                 userIds, states, catIds, rangeStart, rangeEnd, from, size);
 
         Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
-
-        List<ViewStats> viewStatsList = statsClient.getViewsBySetEventId(eventIds);
-        List<EventFullDto> eventFullDtoList = new ArrayList<>();
-        for (int i = 0; i < events.size(); i++) {
-            eventFullDtoList.add(eventMapper.toEventFullDto(events.get(i),
-                    viewStatsList != null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
-                            viewStatsList.get(i).getHits() : 0L));
-        }
-        return eventFullDtoList;
+        Map<Long, Long> viewStatsMap = statsClient.getSetViewsByEventId(eventIds);
+        return events.stream().map(event -> eventMapper.toEventFullDto(event,
+                        viewStatsMap.containsKey(viewStatsMap.get(event.getId())) ? viewStatsMap.get(event.getId()) : 0L))
+                .collect(Collectors.toList());
     }
 
     @Override

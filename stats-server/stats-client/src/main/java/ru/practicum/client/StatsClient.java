@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 public class StatsClient extends BaseClient {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final ObjectMapper mapper = new ObjectMapper();
-    private final TypeReference<List<ViewStats>> mapType = new TypeReference<>(){};
+    private final TypeReference<List<ViewStats>> mapType = new TypeReference<>() {
+    };
 
     @Autowired
     public StatsClient(@Value("${stats-service.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -60,15 +61,22 @@ public class StatsClient extends BaseClient {
         return viewStatsList != null && !viewStatsList.isEmpty() ? viewStatsList.get(0).getHits() : 0L;
     }
 
-    public List<ViewStats> getViewsBySetEventId(Set<Long> eventIds) {
+    public Map<Long, Long> getSetViewsByEventId(Set<Long> eventIds) {
         Map<String, Object> parameters = Map.of(
                 "start", LocalDateTime.now().minusYears(1000).format(dateTimeFormatter),
                 "end", LocalDateTime.now().plusYears(1000).format(dateTimeFormatter),
                 "uris", (eventIds.stream().map(id -> "/events/" + id).collect(Collectors.toList())),
-                "unique", "false"
+                "unique", Boolean.FALSE
         );
         ResponseEntity<Object> response = get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
-        return response.hasBody() ? mapper.convertValue(response.getBody(), mapType) : Collections.emptyList();
+
+        return response.hasBody() ? mapper.convertValue(response.getBody(), mapType).stream()
+                .collect(Collectors.toMap(
+                        this::getEventIdFromURI, ViewStats::getHits))
+                : Collections.emptyMap();
+    }
+    private Long getEventIdFromURI(ViewStats e) {
+        return Long.parseLong(e.getUri().substring(e.getUri().lastIndexOf("/") + 1));
     }
 
     private String toString(List<String> strings) {

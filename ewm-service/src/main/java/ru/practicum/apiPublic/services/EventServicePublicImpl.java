@@ -55,16 +55,12 @@ public class EventServicePublicImpl implements EventServicePublic {
         log.info("ApiPublic. Возвращены события по параметрам text= {}, categories= {}, paid= {}, rangeStart= {}, " +
                         "rangeEnd= {}, onlyAvailable= {}, sort= {}, from= {}, size= {}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
 
-        List<ViewStats> viewStatsList = statsClient.getViewsBySetEventId(eventIds);
-        List<EventShortDto> eventShortDtoList = new ArrayList<>();
-        for (int i = 0; i < events.size(); i++) {
-            eventShortDtoList.add(eventMapper.toEventShortDto(events.get(i),
-                    viewStatsList != null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
-                            viewStatsList.get(i).getHits() : 0L));
-        }
-        return eventShortDtoList;
+        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
+        Map<Long, Long> viewStatsMap = statsClient.getSetViewsByEventId(eventIds);
+        return events.stream().map(event -> eventMapper.toEventShortDto(event,
+                        viewStatsMap.containsKey(viewStatsMap.get(event.getId())) ? viewStatsMap.get(event.getId()) : 0L))
+                .collect(Collectors.toList());
     }
 
     @Override

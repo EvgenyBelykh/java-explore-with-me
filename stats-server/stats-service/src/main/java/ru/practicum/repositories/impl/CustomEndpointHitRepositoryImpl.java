@@ -36,11 +36,14 @@ public class CustomEndpointHitRepositoryImpl implements CustomEndpointHitReposit
                 endpointHitRoot.get("uri"),
                 endpointHitRoot.get("ip"));
 
-        criteriaQuery.orderBy(criteriaBuilder.desc(unique ? criteriaBuilder.countDistinct(endpointHitRoot.get("ip")) :
-                criteriaBuilder.count(endpointHitRoot.get("ip"))));
+        criteriaQuery.orderBy(
+                criteriaBuilder.desc(
+                        unique ? criteriaBuilder.countDistinct(endpointHitRoot.get("ip")) :
+                                criteriaBuilder.count(endpointHitRoot.get("ip"))));
 
         predicates.add(criteriaBuilder.between(endpointHitRoot.get("timestamp"), start, end));
-        if (!uris.isEmpty()) {
+
+        if (uris != null && uris.size() > 0) {
             CriteriaBuilder.In<String> in = criteriaBuilder.in(endpointHitRoot.get("uri"));
             for (String uri : uris) {
                 in.value(uri);

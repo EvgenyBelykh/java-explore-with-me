@@ -34,7 +34,7 @@ public class StatsController {
     @GetMapping("/stats")
     public List<ViewStats> getStats(@RequestParam(name = "start") String start,
                                    @RequestParam(name = "end") String end,
-                                   @RequestParam(name = "uris") List<String> uris,
+                                   @RequestParam(name = "uris", required = false) List<String> uris,
                                    @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
         log.info("Запрос получения статистики по посещениям");
 

@@ -8,7 +8,6 @@ import ru.practicum.common.dto.CategoryDto;
 import ru.practicum.common.dto.NewCategoryDto;
 import ru.practicum.common.exceptions.EventUseThisCategoryException;
 import ru.practicum.common.exceptions.ExistNameCategoryException;
-import ru.practicum.common.exceptions.NameCategoryIsBlankException;
 import ru.practicum.common.exceptions.NotFindCategoryException;
 import ru.practicum.common.mappers.CategoryMapper;
 import ru.practicum.common.models.Category;
@@ -27,7 +26,6 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
     @Override
     public CategoryDto add(NewCategoryDto newCategoryDto) {
         isNameAlreadyUse(newCategoryDto);
-        isNameBlank(newCategoryDto);
 
         Category category = categoryRepository.save(categoryMapper.toCategory(newCategoryDto));
         log.info("ApiAdmin. Сохранена категория name= {}", newCategoryDto.getName());
@@ -50,12 +48,9 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
     @Override
     public CategoryDto patch(Long idCat, NewCategoryDto newCategoryDto) {
         isNameAlreadyUse(newCategoryDto);
-        isNameBlank(newCategoryDto);
-
         Category category = categoryRepository.findById(idCat).orElseThrow(() -> new NotFindCategoryException(idCat));
         category.setName(newCategoryDto.getName());
         category.setId(idCat);
-        categoryRepository.save(category);
         log.info("ApiAdmin. Обновлена категория с id={} и name={}", idCat, category.getName());
 
         return categoryMapper.toCategoryDto(category);
@@ -66,11 +61,4 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
             throw new ExistNameCategoryException(newCategoryDto.getName());
         }
     }
-
-    private void isNameBlank(NewCategoryDto newCategoryDto) {
-        if (newCategoryDto.getName().isBlank()) {
-            throw new NameCategoryIsBlankException("Name для категории не можеть быть пустым");
-        }
-    }
-
 }

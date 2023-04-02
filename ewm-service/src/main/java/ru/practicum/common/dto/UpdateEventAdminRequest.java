@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
@@ -14,16 +13,13 @@ import javax.validation.constraints.Min;
 @Builder
 public class UpdateEventAdminRequest {
 
-    @Min(value = 3, message = "Неверные данные: размер заголовка от 3 до 120 символов")
-    @Max(value = 120, message = "Неверные данные: размер заголовка от 3 до 120 символов")
+    @Size(max = 121, message = "Неверные данные: размер заголовка от 3 до 120 символов")
     private String title;
 
-    @Min(value = 20, message = "Неверные данные: размер аннотации от 20 до 2000 символов")
-    @Max(value = 2000, message = "Неверные данные: размер аннотации от 20 до 2000 символов")
+    @Size(max = 2001, message = "Неверные данные: размер аннотации от 20 до 2000 символов")
     private String annotation;
 
-    @Min(value = 20, message = "Неверные данные: размер описания от 20 до 7000 символов")
-    @Max(value = 7000, message = "Неверные данные: размер описания от 20 до 7000 символов")
+    @Size(max = 7001, message = "Неверные данные: размер описания от 20 до 7000 символов")
     private String description;
 
     private Long category;

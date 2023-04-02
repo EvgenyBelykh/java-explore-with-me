@@ -18,7 +18,7 @@ public class CompilationMapper {
     public Compilation toCompilation(NewCompilationDto newCompilationDto, List<Event> events) {
         return new Compilation(
                 newCompilationDto.getTitle(),
-                newCompilationDto.getPinned(),
+                newCompilationDto.isPinned(),
                 events
         );
     }
@@ -29,6 +29,6 @@ public class CompilationMapper {
                 compilation.getTitle(),
                 compilation.getPinned(),
                 compilation.getEvents()
-                        .stream().map(eventMapper::toEventShortDto).collect(Collectors.toList()));
+                        .stream().map(event -> eventMapper.toEventShortDto(event, null)).collect(Collectors.toList()));
     }
 }

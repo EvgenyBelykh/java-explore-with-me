@@ -5,16 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Valid
 public class Location {
-    @NotBlank
+    @NotNull
     private Float lat;
 
-    @NotBlank
+    @NotNull
     private Float lon;
 }

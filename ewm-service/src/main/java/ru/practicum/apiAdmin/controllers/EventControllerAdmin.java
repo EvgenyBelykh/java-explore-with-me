@@ -2,16 +2,21 @@ package ru.practicum.apiAdmin.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.apiAdmin.services.EventServiceAdmin;
 import ru.practicum.common.dto.EventFullDto;
 import ru.practicum.common.dto.UpdateEventAdminRequest;
+
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping("/admin/events")
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 public class EventControllerAdmin {
 
     private final EventServiceAdmin eventServiceAdmin;
@@ -22,8 +27,8 @@ public class EventControllerAdmin {
                                      @RequestParam(value = "categories", required = false) List<Long> catIds,
                                      @RequestParam(value = "rangeStart", required = false) String rangeStart,
                                      @RequestParam(value = "rangeEnd", required = false) String rangeEnd,
-                                     @RequestParam(value = "from", defaultValue = "0") Integer from,
-                                     @RequestParam(value = "size", defaultValue = "10") Integer size) {
+                                     @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero Integer from,
+                                     @RequestParam(value = "size", defaultValue = "10") @Positive Integer size) {
 
         log.info("ApiAdmin. Запрос получения информации по событиям по следующим параметрам: " +
                 "userIds= {}, " +

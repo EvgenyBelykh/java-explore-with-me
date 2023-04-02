@@ -1,23 +1,27 @@
 package ru.practicum.common.mappers;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.EndpointHitDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Component
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class EndpointHitMapper {
+
+    private final DateTimeMapper dateTimeMapper;
+    @Value("${ewm-service.appName}")
+    private String app;
 
     public EndpointHitDto toEndpointHitDto(HttpServletRequest request) {
         EndpointHitDto endpointHitDto = new EndpointHitDto();
-        endpointHitDto.setApp("ewm-service");
-        endpointHitDto.setUri(request.getRequestURI());
+        endpointHitDto.setApp(app);
         endpointHitDto.setIp(request.getRemoteAddr());
-        endpointHitDto.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        endpointHitDto.setTimestamp(dateTimeMapper.toLocalDateTimeString(LocalDateTime.now()));
+        endpointHitDto.setUri(request.getRequestURI());
         return endpointHitDto;
     }
 

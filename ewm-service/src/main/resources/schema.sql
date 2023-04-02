@@ -30,12 +30,10 @@ CREATE TABLE IF NOT EXISTS events
     event_date                      timestamp WITHOUT TIME ZONE,
     created_on                      timestamp WITHOUT TIME ZONE,
     published_on                    timestamp WITHOUT TIME ZONE,
-    confirmed_requests              BIGINT,
     request_moderation              BOOLEAN,
     paid                           BOOLEAN,
     participant_limit               INTEGER,
     state                          VARCHAR(20),
-    views                          BIGINT,
 
     CONSTRAINT fk_category_events  FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE,
     CONSTRAINT fk_location_events  FOREIGN KEY (location_id) REFERENCES locations (id) ON DELETE CASCADE,

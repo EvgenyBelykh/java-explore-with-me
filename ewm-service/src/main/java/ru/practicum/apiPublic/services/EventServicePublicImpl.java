@@ -3,6 +3,7 @@ package ru.practicum.apiPublic.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.StatsClient;
 import ru.practicum.common.dto.EventFullDto;
 import ru.practicum.common.dto.EventShortDto;
@@ -14,21 +15,21 @@ import ru.practicum.common.mappers.EndpointHitMapper;
 import ru.practicum.common.mappers.EventMapper;
 import ru.practicum.common.models.Event;
 import ru.practicum.common.repositories.EventRepository;
+import ru.practicum.dto.ViewStats;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class EventServicePublicImpl implements EventServicePublic {
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final EndpointHitMapper endpointHitMapper;
-
     private final StatsClient statsClient;
 
     @Override
@@ -54,8 +55,16 @@ public class EventServicePublicImpl implements EventServicePublic {
         log.info("ApiPublic. Возвращены события по параметрам text= {}, categories= {}, paid= {}, rangeStart= {}, " +
                         "rangeEnd= {}, onlyAvailable= {}, sort= {}, from= {}, size= {}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
 
-        return events.stream().map(eventMapper::toEventShortDto).collect(Collectors.toList());
+        List<ViewStats> viewStatsList = statsClient.getViewsBySetEventId(eventIds);
+        List<EventShortDto> eventShortDtoList = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            eventShortDtoList.add(eventMapper.toEventShortDto(events.get(i),
+                    viewStatsList!= null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
+                            viewStatsList.get(i).getHits() : 0L));
+        }
+        return eventShortDtoList;
     }
 
     @Override
@@ -66,10 +75,10 @@ public class EventServicePublicImpl implements EventServicePublic {
         if (event.getState() != State.PUBLISHED) {
             throw new NotPublishedPublicEventException(id);
         }
-        event.setViews(event.getViews() + 1);
-        eventRepository.save(event);
+
+        Long views = statsClient.getViewsByEventId(id);
 
         log.info("ApiPublic. Возвращен запрос получения подробной информации об опубликованном событии c id= {}", id);
-        return eventMapper.toEventFullDto(event);
+        return eventMapper.toEventFullDto(event, views);
     }
 }

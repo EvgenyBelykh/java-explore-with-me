@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,24 +12,18 @@ import javax.validation.constraints.NotBlank;
 public class EventFullDto {
     private Long id;
 
-    @NotBlank
     private String title;
 
-    @NotBlank
     private String annotation;
 
-    @NotBlank
     private String description;
 
     private CategoryDto category;
 
-    @NotBlank
     private Location location;
 
-    @NotBlank
     private UserShortDto initiator;
 
-    @NotBlank
     private String eventDate;
 
     private String createdOn;
@@ -48,7 +40,6 @@ public class EventFullDto {
     // Если true, то все заявки будут ожидать подтверждения инициатором события.
     // Если false - то будут подтверждаться автоматически.
 
-    @NotBlank
     private Boolean paid;
     //Нужно ли оплачивать участие
 

@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.StatsClient;
 import ru.practicum.common.dto.EventFullDto;
 import ru.practicum.common.dto.UpdateEventAdminRequest;
 import ru.practicum.common.enums.State;
 import ru.practicum.common.enums.StateAction;
 import ru.practicum.common.exceptions.*;
+import ru.practicum.common.mappers.DateTimeMapper;
 import ru.practicum.common.mappers.EventMapper;
 import ru.practicum.common.mappers.LocationMapper;
 import ru.practicum.common.models.Category;
@@ -19,12 +21,13 @@ import ru.practicum.common.repositories.CategoryRepository;
 import ru.practicum.common.repositories.EventRepository;
 import ru.practicum.common.repositories.LocationRepository;
 import ru.practicum.common.repositories.UserRepository;
+import ru.practicum.dto.ViewStats;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,12 +42,18 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
 
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
+    private final DateTimeMapper dateTimeMapper;
 
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final StatsClient statsClient;
 
     @Override
     public List<EventFullDto> getAll(List<Long> userIds, List<String> states, List<Long> catIds,
                                      String rangeStart, String rangeEnd, Integer from, Integer size) {
+        if (rangeStart != null && rangeEnd != null) {
+            if (dateTimeMapper.toLocalDateTime(rangeStart).isAfter(dateTimeMapper.toLocalDateTime(rangeEnd))) {
+                throw new EventTimeException("Ошибка поиска по параметрам: rangeStart после rangeEnd");
+            }
+        }
         Iterable<User> userIterable = userRepository.findAllById(userIds);
         List<User> users = new ArrayList<>();
         for (User user : userIterable) {
@@ -60,8 +69,8 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
                 userIds,
                 toStateEnums(states),
                 catIds,
-                rangeStart != null ? LocalDateTime.parse(rangeStart, dateTimeFormatter) : null,
-                rangeEnd != null ? LocalDateTime.parse(rangeEnd, dateTimeFormatter) : null,
+                rangeStart != null ? dateTimeMapper.toLocalDateTime(rangeStart) : null,
+                rangeEnd != null ? dateTimeMapper.toLocalDateTime(rangeEnd) : null,
                 from,
                 size
         );
@@ -80,7 +89,16 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
                         "size= {}",
                 userIds, states, catIds, rangeStart, rangeEnd, from, size);
 
-        return events.stream().map(eventMapper::toEventFullDto).collect(Collectors.toList());
+        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
+
+        List<ViewStats> viewStatsList = statsClient.getViewsBySetEventId(eventIds);
+        List<EventFullDto> eventFullDtoList = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            eventFullDtoList.add(eventMapper.toEventFullDto(events.get(i),
+                    viewStatsList!= null && !viewStatsList.isEmpty() && viewStatsList.get(i) == null ?
+                            viewStatsList.get(i).getHits() : 0L));
+        }
+        return eventFullDtoList;
     }
 
     @Override
@@ -98,7 +116,6 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
         checkOrUpdateParticipantLimit(updateEventAdminRequest, event);
         checkOrUpdateRequestModeration(updateEventAdminRequest, event);
 
-        eventRepository.save(event);
         log.info("ApiAdmin. Обновлено событие с id= {}", event.getId());
         return toEventFullDto(event);
     }
@@ -108,11 +125,11 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
             throw new TooLateEventException(event.getTitle());
         } else {
             if (updateEventAdminRequest.getEventDate() != null) {
-                if (LocalDateTime.parse(updateEventAdminRequest.getEventDate(), dateTimeFormatter).minusHours(1)
+                if (dateTimeMapper.toLocalDateTime(updateEventAdminRequest.getEventDate()).minusHours(1)
                         .isBefore(LocalDateTime.now())) {
                     throw new TooLateEventException(updateEventAdminRequest.getTitle());
                 } else {
-                    event.setEventDate(LocalDateTime.parse(updateEventAdminRequest.getEventDate(), dateTimeFormatter));
+                    event.setEventDate(dateTimeMapper.toLocalDateTime(updateEventAdminRequest.getEventDate()));
                 }
             }
         }
@@ -136,19 +153,19 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     }
 
     private void checkOrUpdateTitle(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-        if (updateEventAdminRequest.getTitle() != null) {
+        if (updateEventAdminRequest.getTitle() != null && !updateEventAdminRequest.getTitle().isBlank()) {
             event.setTitle(updateEventAdminRequest.getTitle());
         }
     }
 
     private void checkOrUpdateAnnotation(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-        if (updateEventAdminRequest.getAnnotation() != null) {
+        if (updateEventAdminRequest.getAnnotation() != null && !updateEventAdminRequest.getAnnotation().isBlank()) {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
         }
     }
 
     private void checkOrUpdateDescription(UpdateEventAdminRequest updateEventAdminRequest, Event event) {
-        if (updateEventAdminRequest.getDescription() != null) {
+        if (updateEventAdminRequest.getDescription() != null && !updateEventAdminRequest.getDescription().isBlank()) {
             event.setDescription(updateEventAdminRequest.getDescription());
         }
     }
@@ -189,9 +206,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     }
 
     private EventFullDto toEventFullDto(Event event) {
-        return eventMapper.toEventFullDto(
-                event
-        );
+        return eventMapper.toEventFullDto(event, null);
     }
 
     private List<State> toStateEnums(List<String> state) {

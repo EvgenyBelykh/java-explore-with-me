@@ -76,9 +76,6 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
 
         if (!event.getRequestModeration()) {
             participationRequest.setStatus(Status.CONFIRMED);
-
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            eventRepository.save(event);
             log.info("Обновлено количество участников в событии с id= {}", eventId);
 
         } else {
@@ -98,11 +95,10 @@ public class ParticipationRequestServicePrivateImpl implements ParticipationRequ
                 .orElseThrow(() -> new NotFindParticipationRequest(requestId));
         Long eventId = participationRequest.getEvent().getId();
 
-        Event event = eventRepository.findById(participationRequest.getEvent().getId())
+        eventRepository.findById(participationRequest.getEvent().getId())
                 .orElseThrow(() -> new NotFindEventException(eventId));
 
         participationRequest.setStatus(Status.CANCELED);
-        participationRequest = participationRequestRepository.save(participationRequest);
         log.info("ApiPrivate. Пользователь с id= {} отменил свою заявку с id= {} на участие в событии с id= {}",
                 idUser, requestId, eventId);
 

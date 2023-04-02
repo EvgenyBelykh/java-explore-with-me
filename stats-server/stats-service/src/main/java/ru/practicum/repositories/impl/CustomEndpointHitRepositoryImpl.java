@@ -3,7 +3,7 @@ package ru.practicum.repositories.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.practicum.model.EndpointHit;
-import ru.practicum.model.ViewStats;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.repositories.CustomEndpointHitRepository;
 
 import javax.persistence.*;
@@ -25,12 +25,14 @@ public class CustomEndpointHitRepositoryImpl implements CustomEndpointHitReposit
 
         List<Predicate> predicates = new ArrayList<>();
 
-        criteriaQuery.select(criteriaBuilder.construct(ViewStats.class, endpointHitRoot.get("uri"),
+        criteriaQuery.select(criteriaBuilder.construct(ViewStats.class,
                 endpointHitRoot.get("app"),
+                endpointHitRoot.get("uri"),
                 unique ? criteriaBuilder.countDistinct(endpointHitRoot.get("ip")) :
                         criteriaBuilder.count(endpointHitRoot.get("ip"))));
 
-        criteriaQuery.groupBy(endpointHitRoot.get("app"),
+        criteriaQuery.groupBy(
+                endpointHitRoot.get("app"),
                 endpointHitRoot.get("uri"),
                 endpointHitRoot.get("ip"));
 

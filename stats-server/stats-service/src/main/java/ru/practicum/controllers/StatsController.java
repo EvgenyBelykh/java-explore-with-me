@@ -6,9 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
-import ru.practicum.model.ViewStats;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.services.StatService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class StatsController {
     }
 
     @PostMapping("/hit")
-    public ResponseEntity<EndpointHitDto> hit(@RequestBody EndpointHitDto endpointHitDto) {
+    public ResponseEntity<EndpointHitDto> hit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
         log.info("Запрос сохранения информации об отправке запроса пользователем с ip={} на адрес={} ",
                 endpointHitDto.getIp(), endpointHitDto.getUri());
 

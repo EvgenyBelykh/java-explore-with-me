@@ -29,10 +29,13 @@ public class CompilationServiceAdminImpl implements CompilationServiceAdmin {
     @Override
     public CompilationDto add(NewCompilationDto newCompilationDto) {
 
-        Iterable<Event> events = eventRepository.findAllById(newCompilationDto.getEvents());
         List<Event> eventList = new ArrayList<>();
-        for (Event event : events) {
-            eventList.add(event);
+
+        if (newCompilationDto.getEvents() != null && newCompilationDto.getEvents().size() > 0) {
+            Iterable<Event> events = eventRepository.findAllById(newCompilationDto.getEvents());
+            for (Event event : events) {
+                eventList.add(event);
+            }
         }
 
         Compilation compilation = compilationRepository
@@ -54,7 +57,7 @@ public class CompilationServiceAdminImpl implements CompilationServiceAdmin {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFindCompilationException(compId));
 
-        if (updateCompilationRequest.getTitle() != null) {
+        if (updateCompilationRequest.getTitle() != null && !updateCompilationRequest.getTitle().isBlank()) {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
 
@@ -70,8 +73,6 @@ public class CompilationServiceAdminImpl implements CompilationServiceAdmin {
             }
             compilation.setEvents(eventList);
         }
-
-        compilation = compilationRepository.save(compilation);
 
         log.info("ApiAdmin. Обновлена подборка событий с id= {}", compId);
         return compilationMapper.toCompilationDto(compilation);

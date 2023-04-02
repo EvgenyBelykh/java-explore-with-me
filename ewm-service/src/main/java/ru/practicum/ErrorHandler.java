@@ -10,6 +10,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import ru.practicum.common.error.ApiError;
 import ru.practicum.common.exceptions.*;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
@@ -20,7 +22,9 @@ public class ErrorHandler {
             NotConfirmedOrRejectedEventStatusUpdateException.class,
             MethodArgumentNotValidException.class,
             NotFindEventsException.class,
-            MethodArgumentTypeMismatchException.class})
+            EventTimeException.class,
+            MethodArgumentTypeMismatchException.class,
+            ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleBadRequestException(Exception e) {
         log.info("400 Bad_Request");

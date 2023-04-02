@@ -55,6 +55,7 @@ public class BaseClient {
 
         return responseBuilder.build();
     }
+
     private HttpHeaders defaultHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

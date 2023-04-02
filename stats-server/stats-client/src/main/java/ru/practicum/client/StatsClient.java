@@ -70,6 +70,7 @@ public class StatsClient extends BaseClient {
         ResponseEntity<Object> response = get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
         return response.hasBody() ? mapper.convertValue(response.getBody(), mapType) : Collections.emptyList();
     }
+
     private String toString(List<String> strings) {
         return Arrays.toString(strings.toArray()).replace("[", "").replace("]", "");
     }

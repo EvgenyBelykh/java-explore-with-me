@@ -48,9 +48,9 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
     @Override
     public CategoryDto patch(Long idCat, NewCategoryDto newCategoryDto) {
         Category category = categoryRepository.findById(idCat).orElseThrow(() -> new NotFindCategoryException(idCat));
-        Category ExistCategory = categoryRepository.findByName(newCategoryDto.getName());
+        Category existCategory = categoryRepository.findByName(newCategoryDto.getName());
 
-        if (ExistCategory != null && ExistCategory.getId() != idCat) {
+        if (existCategory != null && existCategory.getId() != idCat) {
             throw new ExistNameCategoryException(newCategoryDto.getName());
         }
 

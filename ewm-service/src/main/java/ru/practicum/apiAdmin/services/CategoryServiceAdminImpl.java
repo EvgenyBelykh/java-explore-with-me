@@ -14,8 +14,6 @@ import ru.practicum.common.models.Category;
 import ru.practicum.common.repositories.CategoryRepository;
 import ru.practicum.common.repositories.EventRepository;
 
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j

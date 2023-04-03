@@ -1,15 +1,15 @@
 package ru.practicum.common.mappers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.common.dto.ParticipationRequestDto;
 import ru.practicum.common.models.ParticipationRequest;
 
-import java.time.format.DateTimeFormatter;
-
 @Component
+@RequiredArgsConstructor
 public class ParticipationRequestMapper {
 
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeMapper dateTimeMapper;
 
     public ParticipationRequestDto toParticipationRequestDto(ParticipationRequest participationRequest) {
         return new ParticipationRequestDto(
@@ -17,7 +17,8 @@ public class ParticipationRequestMapper {
                 participationRequest.getRequester().getId(),
                 participationRequest.getEvent().getId(),
                 participationRequest.getStatus().toString(),
-                participationRequest.getCreated() != null ? participationRequest.getCreated().format(dateTimeFormatter) : null
+                participationRequest.getCreated() != null ?
+                        dateTimeMapper.toLocalDateTimeString(participationRequest.getCreated()) : null
         );
     }
 }

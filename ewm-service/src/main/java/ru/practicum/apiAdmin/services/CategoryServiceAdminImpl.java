@@ -14,6 +14,8 @@ import ru.practicum.common.models.Category;
 import ru.practicum.common.repositories.CategoryRepository;
 import ru.practicum.common.repositories.EventRepository;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -47,10 +49,14 @@ public class CategoryServiceAdminImpl implements CategoryServiceAdmin {
 
     @Override
     public CategoryDto patch(Long idCat, NewCategoryDto newCategoryDto) {
-        isNameAlreadyUse(newCategoryDto);
         Category category = categoryRepository.findById(idCat).orElseThrow(() -> new NotFindCategoryException(idCat));
+        Category ExistCategory = categoryRepository.findByName(newCategoryDto.getName());
+
+        if (ExistCategory != null && ExistCategory.getId() != idCat) {
+            throw new ExistNameCategoryException(newCategoryDto.getName());
+        }
+
         category.setName(newCategoryDto.getName());
-        category.setId(idCat);
         log.info("ApiAdmin. Обновлена категория с id={} и name={}", idCat, category.getName());
 
         return categoryMapper.toCategoryDto(category);

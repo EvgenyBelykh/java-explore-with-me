@@ -58,7 +58,7 @@ public class EventServicePublicImpl implements EventServicePublic {
         Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
         Map<Long, Long> viewStatsMap = statsClient.getSetViewsByEventId(eventIds);
         return events.stream().map(event -> eventMapper.toEventShortDto(event,
-                        viewStatsMap.containsKey(viewStatsMap.get(event.getId())) ? viewStatsMap.get(event.getId()) : 0L))
+                        viewStatsMap.getOrDefault(viewStatsMap.get(event.getId()), 0L)))
                 .collect(Collectors.toList());
     }
 

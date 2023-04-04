@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.mappers.EndpointHitMapper;
 import ru.practicum.model.EndpointHit;
-import ru.practicum.model.ViewStats;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.repositories.EndpointHitRepository;
 import ru.practicum.services.StatService;
 
@@ -20,11 +20,12 @@ import java.util.List;
 public class StatServiceImpl implements StatService {
     private final EndpointHitRepository endpointHitRepository;
     private final EndpointHitMapper endpointHitMapper;
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public EndpointHitDto add(EndpointHitDto endpointHitDto) {
-        EndpointHit endpointHit = endpointHitMapper.toEndpointHit(endpointHitDto.getApp(),
+        EndpointHit endpointHit = endpointHitMapper.toEndpointHit(
+                endpointHitDto.getApp(),
                 endpointHitDto.getUri(),
                 endpointHitDto.getIp(),
                 LocalDateTime.parse(endpointHitDto.getTimestamp(), dateTimeFormatter));
@@ -38,11 +39,12 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public List<ViewStats> getStat(String start, String end, List<String> uris, Boolean unique) {
-        return endpointHitRepository.getStats(
+        List<ViewStats> stats = endpointHitRepository.getStats(
                 LocalDateTime.parse(start, dateTimeFormatter),
                 LocalDateTime.parse(end, dateTimeFormatter),
                 uris,
                 unique
         );
+        return stats;
     }
 }

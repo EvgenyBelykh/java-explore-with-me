@@ -1,6 +1,6 @@
 package ru.practicum.repositories;
 
-import ru.practicum.model.ViewStats;
+import ru.practicum.dto.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.List;

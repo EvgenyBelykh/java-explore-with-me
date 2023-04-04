@@ -1,18 +1,17 @@
-package ru.practicum.model;
+package ru.practicum.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ViewStats {
-    private String app;
+public class UserShortDto {
+    private Long id;
 
-    private String uri;
-
-    private Long hits;
+    private String name;
 }

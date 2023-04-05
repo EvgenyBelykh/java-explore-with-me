@@ -24,7 +24,8 @@ public class ErrorHandler {
             NotFindEventsException.class,
             EventTimeException.class,
             MethodArgumentTypeMismatchException.class,
-            ConstraintViolationException.class})
+            ConstraintViolationException.class,
+            NotBelongCommentToUserException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleBadRequestException(Exception e) {
         log.info("400 Bad_Request");
@@ -42,7 +43,8 @@ public class ErrorHandler {
             NotFindEventException.class,
             NotFindCompilationException.class,
             NotFindParticipationRequest.class,
-            NotPublishedPublicEventException.class})
+            NotPublishedPublicEventException.class,
+            NotFindCommentsException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFoundException(Exception e) {
         log.info("404 Not_Found");

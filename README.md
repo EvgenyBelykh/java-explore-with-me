@@ -1,7 +1,3 @@
-Ссылка на пулл-реквест:
-https://github.com/EvgenyBelykh/java-explore-with-me/pull/4
-
-
 # explore-with-me
 Template repository for Explore-with-me project.
 ![diagram](https://github.com/EvgenyBelykh/java-explore-with-me/blob/main_svc/explore-with-me-1.png)

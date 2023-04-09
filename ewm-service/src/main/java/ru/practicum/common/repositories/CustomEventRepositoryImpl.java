@@ -50,29 +50,9 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
             predicates.add(inClause);
         }
 
-        if (catIds != null && catIds.size() > 0) {
-            In<Long> inClause = criteriaBuilder.in(rootEvent.get("category"));
-            for (Long catId : catIds) {
-                inClause.value(catId);
-            }
-            predicates.add(inClause);
-        }
-
-        if (rangeStart != null) {
-            predicates.add(criteriaBuilder.greaterThan(rootEvent.get("eventDate"), rangeStart));
-        }
-
-        if (rangeEnd != null) {
-            predicates.add(criteriaBuilder.lessThan(rootEvent.get("eventDate"), rangeEnd));
-        }
-
-        if (rangeEnd == null && rangeStart == null) {
-            predicates.add(criteriaBuilder.greaterThan(rootEvent.get("eventDate"), LocalDateTime.now()));
-        }
-
-        criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        return entityManager.createQuery(criteriaQuery)
-                .setFirstResult(from).setMaxResults(size).getResultList();
+        addCatIds(catIds, criteriaBuilder, rootEvent, predicates);
+        addTime(rangeStart, rangeEnd, criteriaBuilder, rootEvent, predicates);
+        return getEventList(criteriaQuery, predicates, from, size);
     }
 
     @Override
@@ -85,7 +65,6 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
 
         Root<Event> rootEvent = criteriaQuery.from(Event.class);
-
         List<Predicate> predicates = new ArrayList<>();
 
         predicates.add(criteriaBuilder.equal(rootEvent.get("state"), State.PUBLISHED));
@@ -98,13 +77,7 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
             ));
         }
 
-        if (categories != null && categories.size() > 0) {
-            In<Long> inClause = criteriaBuilder.in(rootEvent.get("category"));
-            for (Long catId : categories) {
-                inClause.value(catId);
-            }
-            predicates.add(inClause);
-        }
+        addCatIds(categories, criteriaBuilder, rootEvent, predicates);
 
         if (paid != null) {
             predicates.add(criteriaBuilder.equal(rootEvent.get("paid"), paid));
@@ -123,6 +96,29 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
             criteriaQuery.orderBy(criteriaBuilder.desc(rootEvent.get("views")));
         }
 
+        addTime(rangeStart, rangeEnd, criteriaBuilder, rootEvent, predicates);
+
+        return getEventList(criteriaQuery, predicates, from, size);
+    }
+
+    private void addCatIds(List<Long> catIds,
+                           CriteriaBuilder criteriaBuilder,
+                           Root<Event> rootEvent,
+                           List<Predicate> predicates) {
+        if (catIds != null && catIds.size() > 0) {
+            In<Long> inClause = criteriaBuilder.in(rootEvent.get("category"));
+            for (Long catId : catIds) {
+                inClause.value(catId);
+            }
+            predicates.add(inClause);
+        }
+    }
+
+    private void addTime(LocalDateTime rangeStart,
+                         LocalDateTime rangeEnd,
+                         CriteriaBuilder criteriaBuilder,
+                         Root<Event> rootEvent,
+                         List<Predicate> predicates) {
         if (rangeStart != null) {
             predicates.add(criteriaBuilder.greaterThan(rootEvent.get("eventDate"), rangeStart));
         }
@@ -134,7 +130,12 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         if (rangeEnd == null && rangeStart == null) {
             predicates.add(criteriaBuilder.greaterThan(rootEvent.get("eventDate"), LocalDateTime.now()));
         }
+    }
 
+    private List<Event> getEventList(CriteriaQuery<Event> criteriaQuery,
+                                     List<Predicate> predicates,
+                                     Integer from,
+                                     Integer size) {
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(criteriaQuery)
                 .setFirstResult(from).setMaxResults(size).getResultList();

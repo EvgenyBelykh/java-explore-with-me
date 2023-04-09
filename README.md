@@ -1,13 +1,14 @@
+Ссылка на пулл-реквест:
+https://github.com/EvgenyBelykh/java-explore-with-me/pull/4
+
 # explore-with-me
 Template repository for Explore-with-me project.
-![diagram](https://github.com/EvgenyBelykh/java-explore-with-me/blob/main_svc/explore-with-me-1.png)
+![diagram](https://github.com/EvgenyBelykh/java-explore-with-me/blob/feature_comments/explore-with-me-2.png)
 
 ## Code from dbdiagram.io:
 
-
-
   ``` 
- Project exploreWithMe {
+Project exploreWithMe {
 database_type: 'PostgreSql'
 }
 
@@ -38,7 +39,6 @@ participant_limit int
 published_on timestamp
 request_moderation boolean
 state int
-views int
 }
 
 Table state {
@@ -84,6 +84,15 @@ compilation_id bigint pk
 event_id bigint pk
 }
 
+Table comment {
+id bigint [pk, increment]
+text varchar(1000)
+event_id bigint
+author_id bigint
+created timestamp
+}
+
+
 REF: event.category_id > category.id
 REF: event.initiator_id - user.id
 REF: event.location_id > location.id
@@ -92,4 +101,6 @@ REF: participation_requests.requester_id - user.id
 REF: participation_requests.event_id - event.id
 REF: compilation.id <> compilation_event.compilation_id
 REF: compilation_event.event_id <> event.id
+REF: comment.event_id > event.id
+REF: comment.author_id > user.id
    ```

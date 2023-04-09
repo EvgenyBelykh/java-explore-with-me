@@ -18,11 +18,6 @@ import java.util.List;
 public class StatsController {
     private final StatService statService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "OK from controller!";
-    }
-
     @PostMapping("/hit")
     public ResponseEntity<EndpointHitDto> hit(@RequestBody @Valid EndpointHitDto endpointHitDto) {
         log.info("Запрос сохранения информации об отправке запроса пользователем с ip={} на адрес={} ",
